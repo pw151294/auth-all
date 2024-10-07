@@ -1,0 +1,97 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <id>release</id>
+    <formats>
+        <!-- tar.gz-->
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <!-- 打包根目录名 以下舍弃version后缀 -->
+    <baseDirectory>${project.artifactId}</baseDirectory>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib/</outputDirectory>
+            <scope>runtime</scope>
+            <!-- 排除自身依赖-->
+            <excludes>
+                <exclude>com.iflytek:auth-manager</exclude>
+            </excludes>
+        </dependencySet>
+    </dependencySets>
+    <fileSets>
+        <!-- 将src/main/build/bin目录下的所有文件输出到打包根目录中 -->
+        <fileSet>
+            <directory>${project.basedir}/src/main/build/bin</directory>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
+            <!--脚本改为unix编码-->
+            <lineEnding>unix</lineEnding>
+            <filtered>true</filtered><!-- 是否进行属性替换 -->
+        </fileSet>
+
+        <fileSet>
+            <directory>${project.basedir}/src/main/resources</directory>
+            <outputDirectory>config</outputDirectory>
+            <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
+            <includes>
+                <include>**/*.xml</include>
+                <include>**/*.properties</include>
+                <include>**/*.yml</include>
+                <include>**/*.sql</include>
+                <include>**/*.py</include>
+                <include>**/*.json</include>
+            </includes>
+            <filtered>true</filtered><!-- 是否进行属性替换 -->
+        </fileSet>
+        <fileSet>
+            <directory>${project.parent.basedir}/doc</directory>
+            <outputDirectory>config/doc</outputDirectory>
+            <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
+            <includes>
+                <include>**/*.xml</include>
+                <include>**/*.properties</include>
+                <include>**/*.yml</include>
+                <include>**/*.sql</include>
+                <include>**/*.py</include>
+                <include>**/*.json</include>
+            </includes>
+            <filtered>true</filtered><!-- 是否进行属性替换 -->
+        </fileSet>
+        <fileSet>
+            <directory>${project.parent.basedir}/script</directory>
+            <outputDirectory>config/script</outputDirectory>
+            <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
+            <includes>
+                <include>**/*.xml</include>
+                <include>**/*.properties</include>
+                <include>**/*.yml</include>
+                <include>**/*.sql</include>
+                <include>**/*.py</include>
+                <include>**/*.json</include>
+            </includes>
+            <filtered>true</filtered><!-- 是否进行属性替换 -->
+        </fileSet>
+        <!-- 将项目启动jar打包 -->
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+    <files>
+        <file>
+            <source>${project.basedir}/src/main/build/assembly/VERSION</source>
+            <outputDirectory>/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+    </files>
+</assembly>

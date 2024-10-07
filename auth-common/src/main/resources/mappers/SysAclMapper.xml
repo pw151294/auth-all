@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iflytek.auth.common.dao.SysAclMapper">
+
+    <resultMap id="BaseResultMap" type="com.iflytek.auth.common.pojo.SysAcl">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="code" column="code" jdbcType="VARCHAR"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="aclModuleId" column="acl_module_id" jdbcType="INTEGER"/>
+            <result property="url" column="url" jdbcType="VARCHAR"/>
+            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="seq" column="seq" jdbcType="INTEGER"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="operator" column="operator" jdbcType="VARCHAR"/>
+            <result property="operateTime" column="operate_time" jdbcType="TIMESTAMP"/>
+            <result property="operateIp" column="operate_ip" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,code,name,
+        acl_module_id,url,type,
+        status,seq,remark,
+        operator,operate_time,operate_ip
+    </sql>
+    <select id="findAclsByUserId" resultType="com.iflytek.auth.common.pojo.SysAcl">
+        SELECT DISTINCT a.*
+        FROM sys_user u
+                 LEFT JOIN sys_role_user ru ON ru.user_id = u.id
+                 LEFT JOIN sys_role r ON ru.role_id = r.id
+                 LEFT JOIN sys_role_acl ra ON ra.role_id = r.id
+                 LEFT JOIN sys_acl a ON ra.acl_id = a.id
+        WHERE u.id = #{userId}
+          AND u.status = '1'
+          AND r.status = '1'
+          AND a.status = '1';
+    </select>
+    <select id="pageAcls" resultType="com.iflytek.auth.common.vo.SysAclVo">
+        SELECT
+        a.id,
+        a.name,
+        a.type,
+        a.url,
+        a.status,
+        a.seq,
+        a.remark,
+        am.name AS aclModuleName
+        FROM
+        sys_acl a
+        LEFT JOIN
+        sys_acl_module am ON a.acl_module_id = am.id
+        WHERE
+        a.acl_module_id = #{sysAclDto.aclModuleId}
+        <if test="sysAclDto.keyWord != null and sysAclDto.keyWord != ''">
+            AND (
+            am.name LIKE CONCAT('%', #{sysAclDto.keyWord}, '%') OR
+            a.name LIKE CONCAT('%', #{sysAclDto.keyWord}, '%') OR
+            a.url REGEXP #{sysAclDto.keyWord}
+            )
+        </if>
+        ORDER BY a.operate_time
+    </select>
+    <select id="findByNameAndSeq" resultType="java.lang.Integer">
+        select count(*)
+        from sys_acl
+        where (acl_module_id = #{sysAclDto.aclModuleId} and name = #{sysAclDto.name})
+           or (acl_module_id = #{sysAclDto.aclModuleId} and seq = #{sysAclDto.seq});
+    </select>
+    <select id="findUsersByAclId" resultType="com.iflytek.auth.common.vo.SysUserVo">
+        SELECT u.id, u.username
+        FROM sys_role_acl ra
+                 JOIN sys_role r ON ra.role_id = r.id
+                 JOIN sys_role_user ru ON r.id = ru.role_id
+                 JOIN sys_user u ON ru.user_id = u.id
+        WHERE ra.acl_id = #{aclId};
+    </select>
+    <select id="findRolesByAclId" resultType="java.lang.String">
+        SELECT r.name
+        FROM sys_role_acl ra
+                 JOIN sys_role r ON ra.role_id = r.id
+        WHERE ra.acl_id = #{aclId};
+    </select>
+
+</mapper>

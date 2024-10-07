@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iflytek.auth.common.dao.SysAuditMapper">
+
+    <resultMap id="BaseResultMap" type="com.iflytek.auth.common.pojo.SysAudit">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="targetType" column="target_type" jdbcType="INTEGER"/>
+            <result property="targetId" column="target_id" jdbcType="INTEGER"/>
+            <result property="operationType" column="operation_type" jdbcType="INTEGER"/>
+            <result property="oldValue" column="old_value" jdbcType="VARCHAR"/>
+            <result property="newValue" column="new_value" jdbcType="VARCHAR"/>
+            <result property="detail" column="detail" jdbcType="VARCHAR"/>
+            <result property="submitter" column="submitter" jdbcType="VARCHAR"/>
+            <result property="submitTime" column="submit_time" jdbcType="TIMESTAMP"/>
+            <result property="submitterIp" column="submitter_ip" jdbcType="VARCHAR"/>
+            <result property="auditor" column="auditor" jdbcType="VARCHAR"/>
+            <result property="auditTime" column="audit_time" jdbcType="TIMESTAMP"/>
+            <result property="auditorIp" column="auditor_ip" jdbcType="VARCHAR"/>
+            <result property="operator" column="operator" jdbcType="VARCHAR"/>
+            <result property="operateTime" column="operate_time" jdbcType="TIMESTAMP"/>
+            <result property="operateIp" column="operate_ip" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="result" column="result" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,target_type,target_id,
+        operation_type,old_value,new_value,
+        detail,submitter,submit_time,
+        submitter_ip,auditor,audit_time,
+        auditor_ip,operator,operate_time,
+        operate_ip,status,result
+    </sql>
+</mapper>

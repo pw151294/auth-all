@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iflytek.auth.common.dao.SysRoleAclMapper">
+
+    <resultMap id="BaseResultMap" type="com.iflytek.auth.common.pojo.SysRoleAcl">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+            <result property="aclId" column="acl_id" jdbcType="INTEGER"/>
+            <result property="operator" column="operator" jdbcType="VARCHAR"/>
+            <result property="operateTime" column="operate_time" jdbcType="TIMESTAMP"/>
+            <result property="operateIp" column="operate_ip" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,role_id,acl_id,
+        operator,operate_time,operate_ip
+    </sql>
+    <insert id="insertBatch">
+        INSERT INTO sys_role_acl (role_id, acl_id, operator, operate_time, operate_ip)
+        VALUES
+        <foreach collection="sysRoleAcls" item="item" separator=",">
+            (#{item.roleId}, #{item.aclId}, #{item.operator}, #{item.operateTime}, #{item.operateIp})
+        </foreach>
+    </insert>
+    <delete id="deleteByAclId">
+        delete
+        from sys_role_acl
+        where acl_id = #{aclId};
+    </delete>
+    <delete id="deleteByRoleId">
+        delete
+        from sys_role_acl
+        where role_id = #{roleId};
+    </delete>
+    <select id="findAllByRoleId" resultType="com.iflytek.auth.common.vo.SysRoleAclVo">
+        SELECT a.id            AS aclId,
+               a.name          AS aclName,
+               a.acl_module_id AS aclModuleId,
+               CASE
+                   WHEN ra.role_id IS NOT NULL THEN true
+                   ELSE false
+                   END         AS hasRole
+        FROM sys_acl a
+                 LEFT JOIN
+             sys_role_acl ra ON ra.acl_id = a.id AND ra.role_id = #{roleId};
+    </select>
+    <select id="findAclIdsByRoleId" resultType="java.lang.Integer">
+        select acl_id
+        from sys_role_acl
+        where role_id = #{roleId};
+    </select>
+</mapper>

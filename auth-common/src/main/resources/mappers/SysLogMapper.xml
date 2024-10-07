@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iflytek.auth.common.dao.SysLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.iflytek.auth.common.pojo.SysLog">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="targetId" column="target_id" jdbcType="INTEGER"/>
+            <result property="oldValue" column="old_value" jdbcType="VARCHAR"/>
+            <result property="newValue" column="new_value" jdbcType="VARCHAR"/>
+            <result property="operator" column="operator" jdbcType="VARCHAR"/>
+            <result property="operateTime" column="operate_time" jdbcType="TIMESTAMP"/>
+            <result property="operateIp" column="operate_ip" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,type,target_id,
+        old_value,new_value,operator,
+        operate_time,operate_ip,status
+    </sql>
+    <select id="pageLogs" resultType="com.iflytek.auth.common.vo.SysLogVo">
+        SELECT
+        l.id,
+        l.type,
+        l.old_value,
+        l.new_value,
+        l.status,
+        l.operate_time,
+        CASE
+        WHEN l.type = 1 THEN d.name
+        WHEN l.type = 2 THEN u.username
+        WHEN l.type = 3 THEN am.name
+        WHEN l.type = 4 THEN a.name
+        WHEN l.type IN (5, 6, 7) THEN r.name
+        END AS targetName
+        FROM
+        sys_log l
+        LEFT JOIN sys_dept d ON l.type = 1 AND l.target_id = d.id
+        LEFT JOIN sys_user u ON l.type = 2 AND l.target_id = u.id
+        LEFT JOIN sys_acl_module am ON l.type = 3 AND l.target_id = am.id
+        LEFT JOIN sys_acl a ON l.type = 4 AND l.target_id = a.id
+        LEFT JOIN sys_role r ON l.type IN (5, 6, 7) AND l.target_id = r.id
+        WHERE 1=1
+        <if test="sysLogDto.type != null">
+            AND l.type = #{sysLogDto.type}
+        </if>
+        <if test="sysLogDto.status != null">
+            AND l.status = #{sysLogDto.status}
+        </if>
+        <if test="sysLogDto.oldValue != null and sysLogDto.oldValue != ''">
+            AND l.old_value LIKE CONCAT('%', #{sysLogDto.oldValue}, '%')
+        </if>
+        <if test="sysLogDto.newValue != null and sysLogDto.newValue != ''">
+            AND l.new_value LIKE CONCAT('%', #{sysLogDto.newValue}, '%')
+        </if>
+        <if test="sysLogDto.operationStartTime != null">
+            AND l.operate_time >= #{sysLogDto.operationStartTime}
+        </if>
+        <if test="sysLogDto.operationEndTime != null">
+            AND #{sysLogDto.operationEndTime} >= l.operate_time
+        </if>
+        ORDER BY l.operate_time DESC
+    </select>
+</mapper>

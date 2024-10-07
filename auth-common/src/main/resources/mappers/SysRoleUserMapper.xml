@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iflytek.auth.common.dao.SysRoleUserMapper">
+
+    <resultMap id="BaseResultMap" type="com.iflytek.auth.common.pojo.SysRoleUser">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="INTEGER"/>
+            <result property="operator" column="operator" jdbcType="VARCHAR"/>
+            <result property="operateTime" column="operate_time" jdbcType="TIMESTAMP"/>
+            <result property="operateIp" column="operate_ip" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,role_id,user_id,
+        operator,operate_time,operate_ip
+    </sql>
+    <insert id="insertBatch">
+        INSERT INTO sys_role_user (role_id, user_id, operator, operate_time, operate_ip)
+        VALUES
+        <foreach collection="sysRoleUsers" item="item" separator=",">
+            (#{item.roleId}, #{item.userId}, #{item.operator}, #{item.operateTime}, #{item.operateIp})
+        </foreach>
+    </insert>
+    <delete id="deleteByUserId">
+        delete
+        from sys_role_user
+        where user_id = #{userId}
+    </delete>
+    <delete id="deleteByRoleId">
+        delete
+        from sys_role_user
+        where role_id = #{roleId};
+    </delete>
+    <select id="findUserIdsByRoleId" resultType="java.lang.Integer">
+        select user_id
+        from sys_role_user
+        where role_id = #{roleId}
+    </select>
+</mapper>

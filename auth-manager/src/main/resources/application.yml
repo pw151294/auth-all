@@ -1,0 +1,34 @@
+server:
+  port: 8088
+  servlet:
+    context-path: /auth
+
+
+#数据库配置
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    initial-size: 5
+    max-active: 10
+    max-idle: 5
+    max-wait: 10000
+    min-idle: 2
+    password: panwei960801
+    url: jdbc:mysql://localhost:3306/auth_shiro?useSSL=false&serverTimezone=UTC
+    username: root
+
+#mybatis-plus框架相关配值
+mybatis-plus:
+  type-aliases-package: com.iflytek.auth.common.pojo
+  mapper-locations: classpath*:mappers/*.xml
+
+
+#登录主页url
+auth:
+  manager:
+    filter:
+      login:
+        excludeUrls: /auth/user/login,/auth/user/logout
+    login:
+      url: http://172.31.186.189/login
+
