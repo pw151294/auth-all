@@ -12,9 +12,11 @@ import com.iflytek.auth.common.dao.SysRoleUserMapper;
 import com.iflytek.auth.common.dao.SysUserMapper;
 import com.iflytek.auth.common.dto.SysLogDto;
 import com.iflytek.auth.common.dto.SysUserDto;
+import com.iflytek.auth.common.pojo.SysLog;
 import com.iflytek.auth.common.pojo.SysUser;
 import com.iflytek.auth.common.vo.SysUserVo;
 import com.iflytek.auth.common.common.enums.TargetType;
+import com.iflytek.auth.manager.common.utils.LogUtils;
 import com.iflytek.auth.manager.service.ILogService;
 import com.iflytek.auth.manager.service.IUserService;
 import com.iflytek.itsc.web.exception.BaseBizException;
@@ -42,6 +44,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private ILogService logService;
+
+    @Autowired
+    private LogUtils logUtils;
 
     @Override
     public RestResponse<PageInfo<SysUserVo>> pageUsers(SysUserDto sysUserDto) {
@@ -90,12 +95,14 @@ public class UserServiceImpl implements IUserService {
         userMapper.updateById(sysUser);
 
         //记录权限更新日志
-        SysLogDto sysLogDto = new SysLogDto();
-        sysLogDto.setType(TargetType.USER.getType());
-        sysLogDto.setTargetId(sysUser.getId());
-        sysLogDto.setOldValue(oldValue);
-        sysLogDto.setNewValue(newValue);
-        logService.addLog(sysLogDto);
+        SysLog sysLog = new SysLog();
+        sysLog.setType(TargetType.USER.getType());
+        sysLog.setTargetId(sysUser.getId());
+        sysLog.setOldValue(oldValue);
+        sysLog.setNewValue(newValue);
+        sysLog.setStatus(1);
+        PoCommonUtils.setOperationInfo(sysLog);
+        logUtils.offer(sysLog);
 
         return RestResponse.buildSuccess("更新用户信息成功");
     }

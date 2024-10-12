@@ -20,4 +20,10 @@ public class ConfigProperties {
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
+
+    @Value("${log.task.queueSize}")
+    private int queueSize;
+
+    @Value("${log.task.poolSize}")
+    private int poolSize;
 }

@@ -32,3 +32,8 @@ auth:
     login:
       url: http://172.31.186.189/login
 
+#日志定时任务相关配置
+log:
+  task:
+    queueSize: 1024
+    poolSize: 10

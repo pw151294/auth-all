@@ -10,7 +10,6 @@
     <name>auth-all</name>
 
     <modules>
-        <module>shiro-manager</module>
         <module>auth-common</module>
         <module>auth-manager</module>
     </modules>
