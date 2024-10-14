@@ -6,8 +6,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
-import com.iflytek.auth.common.common.utils.PoCommonUtils;
 import com.iflytek.auth.common.common.Validator;
+import com.iflytek.auth.common.common.enums.TargetType;
+import com.iflytek.auth.common.common.utils.PoCommonUtils;
 import com.iflytek.auth.common.dao.SysRoleUserMapper;
 import com.iflytek.auth.common.dao.SysUserMapper;
 import com.iflytek.auth.common.dto.SysLogDto;
@@ -15,14 +16,14 @@ import com.iflytek.auth.common.dto.SysUserDto;
 import com.iflytek.auth.common.pojo.SysLog;
 import com.iflytek.auth.common.pojo.SysUser;
 import com.iflytek.auth.common.vo.SysUserVo;
-import com.iflytek.auth.common.common.enums.TargetType;
-import com.iflytek.auth.manager.common.utils.LogUtils;
+import com.iflytek.auth.manager.common.task.SysTask;
 import com.iflytek.auth.manager.service.ILogService;
 import com.iflytek.auth.manager.service.IUserService;
 import com.iflytek.itsc.web.exception.BaseBizException;
 import com.iflytek.itsc.web.response.RestResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +47,8 @@ public class UserServiceImpl implements IUserService {
     private ILogService logService;
 
     @Autowired
-    private LogUtils logUtils;
+    @Qualifier(value = "logTask")
+    private SysTask logTask;
 
     @Override
     public RestResponse<PageInfo<SysUserVo>> pageUsers(SysUserDto sysUserDto) {
@@ -102,7 +104,7 @@ public class UserServiceImpl implements IUserService {
         sysLog.setNewValue(newValue);
         sysLog.setStatus(1);
         PoCommonUtils.setOperationInfo(sysLog);
-        logUtils.offer(sysLog);
+        logTask.offer(sysLog);
 
         return RestResponse.buildSuccess("更新用户信息成功");
     }
