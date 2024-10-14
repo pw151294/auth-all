@@ -24,12 +24,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!--Project modules-->
-            <dependency>
-                <groupId>com.iflytek</groupId>
-                <artifactId>shiro-manager</artifactId>
-                <version>${project.version}</version>
-            </dependency>
             <!--Project modules End-->
             <dependency>
                 <groupId>com.iflytek</groupId>
