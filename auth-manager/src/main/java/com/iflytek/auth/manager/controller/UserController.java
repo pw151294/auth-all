@@ -44,35 +44,4 @@ public class UserController {
     public RestResponse deleteUser(@PathVariable Integer userId) {
         return userService.deleteUser(userId);
     }
-
-    @PostMapping("/login")
-    public RestResponse login(@RequestBody SysUserDto sysUserDto) {
-        RestResponse loginResp = userService.login(sysUserDto);
-        if (loginResp.getSuccess()) {
-            SysUser sysUser = (SysUser) loginResp.getData();
-            SessionUtils.setUser(sysUser);
-            return RestResponse.buildSuccess("用户登录成功");
-        }
-        return loginResp;
-    }
-
-    @GetMapping("/logout")
-    public void logout(HttpServletResponse response) throws IOException {
-        SessionUtils.removeUser();
-        response.sendRedirect(AuthConstant.loginUrl);
-    }
-
-    @GetMapping("/login")
-    public RestResponse login(@RequestParam String username, @RequestParam String password) {
-        SysUserDto sysUserDto = new SysUserDto();
-        sysUserDto.setUsername(username);
-        sysUserDto.setPassword(password);
-        RestResponse loginResp = userService.login(sysUserDto);
-        if (loginResp.getSuccess()) {
-            SysUser sysUser = (SysUser) loginResp.getData();
-            SessionUtils.setUser(sysUser);
-            return RestResponse.buildSuccess("用户登录成功");
-        }
-        return loginResp;
-    }
 }
