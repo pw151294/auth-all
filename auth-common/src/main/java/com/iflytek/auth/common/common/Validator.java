@@ -122,4 +122,17 @@ public class Validator {
             throw new BaseBizException("基于type后指定的对象id不能为空");
         }
     }
+
+    public static void validateTenantAdd(SysTenantDto sysTenantDto) {
+        if (StringUtils.isBlank(sysTenantDto.getName())) {
+            throw new BaseBizException("租户名称不能为空");
+        }
+    }
+
+    public static void validateTenantUpdate(SysTenantDto sysTenantDto) {
+        validateTenantAdd(sysTenantDto);
+        if (sysTenantDto.getId() == null) {
+            throw new BaseBizException("租户ID不能为空");
+        }
+    }
 }

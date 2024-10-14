@@ -1,10 +1,7 @@
 package com.iflytek.auth.common.common.utils;
 
 import cn.hutool.core.util.ReflectUtil;
-import com.iflytek.auth.common.dto.SysAclDto;
-import com.iflytek.auth.common.dto.SysLogDto;
-import com.iflytek.auth.common.dto.SysRoleDto;
-import com.iflytek.auth.common.dto.SysUserDto;
+import com.iflytek.auth.common.dto.*;
 import com.iflytek.auth.common.pojo.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -75,6 +72,14 @@ public class PoCommonUtils {
         sysLog.setOldValue(sysLogDto.getOldValue());
         sysLog.setNewValue(sysLogDto.getNewValue());
         sysLog.setStatus(sysLogDto.getStatus() == null ? 0 : sysLogDto.getStatus());
+    }
+
+    public static void copyTenantProperties(SysTenantDto sysTenantDto, SysTenant sysTenant) {
+        sysTenant.setName(sysTenantDto.getName());
+        sysTenant.setStatus(sysTenantDto.getStatus() == null ? 1 : sysTenantDto.getStatus());
+        if (StringUtils.isBlank(sysTenantDto.getRemark())) {
+            sysTenant.setRemark(sysTenantDto.getRemark());
+        }
     }
 
     /**

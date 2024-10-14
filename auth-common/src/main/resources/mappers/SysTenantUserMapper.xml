@@ -17,4 +17,29 @@
         id,tenant_id,user_id,
         operator,operate_time,operate_ip
     </sql>
+
+    <insert id="insertAll">
+        INSERT INTO sys_tenant_user (tenant_id, user_id, operator, operate_time, operate_ip)
+        VALUES
+        <foreach collection="tenantUsers" item="tenantUser" separator=",">
+            (
+            #{tenantUser.tenantId},
+            #{tenantUser.userId},
+            <if test="tenantUser.operator != null and tenantUser.operator != ''">
+                #{tenantUser.operator}
+            </if>
+            <if test="tenantUser.operator == null or tenantUser.operator == ''">
+                'Admin'
+            </if>,
+            #{tenantUser.operateTime},
+            #{tenantUser.operateIp}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deleteByTenantId">
+        delete
+        from sys_tenant_user
+        where tenant_id = #{tenantId}
+    </delete>
 </mapper>
