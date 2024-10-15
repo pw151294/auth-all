@@ -1,6 +1,8 @@
 package com.iflytek.auth.manager.service;
 
-import com.iflytek.auth.common.pojo.SysUser;
+
+import com.iflytek.auth.common.dto.SysAuditDto;
+import com.iflytek.itsc.web.response.RestResponse;
 
 /**
  * @author weipan4
@@ -8,9 +10,5 @@ import com.iflytek.auth.common.pojo.SysUser;
  */
 public interface IAuditService {
 
-    void submitUserAdd(SysUser newUser);
-
-    void submitUserUpdate(SysUser oldUser, SysUser newUser);
-
-    void submitUserDelete(Integer userId);
+    RestResponse audit(SysAuditDto sysAuditDto);
 }

@@ -3,6 +3,9 @@ package com.iflytek.auth.common.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.iflytek.auth.common.pojo.SysAudit;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author panwei
@@ -13,5 +16,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface SysAuditMapper extends BaseMapper<SysAudit> {
 
+    void batchInsert(@Param("audits") List<SysAudit> audits);
 
 }
