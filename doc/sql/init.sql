@@ -368,12 +368,41 @@ DROP TABLE IF EXISTS `sys_tenant_user`;
 CREATE TABLE `sys_tenant_user`
 (
     `id`           int(11)     NOT NULL AUTO_INCREMENT,
-    `tenant_id`      int(11)     NOT NULL COMMENT '租户id',
+    `tenant_id`    int(11)     NOT NULL COMMENT '租户id',
     `user_id`      int(11)     NOT NULL COMMENT '用户id',
     `operator`     varchar(20) NOT NULL DEFAULT '' COMMENT '操作者',
     `operate_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后一次更新的时间',
     `operate_ip`   varchar(20) NOT NULL DEFAULT '' COMMENT '最后一次更新者的ip地址',
     PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 28
+  DEFAULT CHARSET = utf8mb4;
+
+-- ----------------------------
+--  Table structure for `sys_audit`
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_audit`;
+create table sys_audit
+(
+    id             int auto_increment
+        primary key,
+    target_type    int         default 0                 not null comment '目标类型，1：部门，2：用户，3：权限模块，4：权限，5：角色，6：角色用户关系，7：角色权限关系',
+    target_id      int                                   null comment '基于target_type后指定的对象id，比如用户、权限、角色等表的主键',
+    operation_type int         default 0                 not null comment '操作类型，1：新增，2：修改，3：删除',
+    old_value      text                                  null comment '旧值',
+    new_value      text                                  null comment '新值',
+    detail         text                                  null comment '操作详情',
+    submitter      varchar(20) default ''                not null comment '提交操作者',
+    submit_time    datetime    default CURRENT_TIMESTAMP not null comment '最后一次提交操作的时间',
+    submitter_ip   varchar(20) default ''                not null comment '最后一次提交操作者的ip地址',
+    auditor        varchar(20)                           null comment '审核人',
+    audit_time     datetime                              null comment '审核时间',
+    auditor_ip     varchar(20)                           null comment '审核人ip地址',
+    operator       varchar(20) default ''                not null comment '操作者',
+    operate_time   datetime    default CURRENT_TIMESTAMP not null comment '最后一次更新的时间',
+    operate_ip     varchar(20) default ''                not null comment '最后一次更新者的ip地址',
+    status         int         default 0                 not null comment '审核状态，0：未审核，1：已审核',
+    result         int         default 0                 not null comment '审核结果，0：审核通过，1：审核未通过'
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 28
   DEFAULT CHARSET = utf8mb4;
