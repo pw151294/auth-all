@@ -1,6 +1,8 @@
 package com.iflytek.auth.common.common.utils;
 
 import cn.hutool.core.util.ReflectUtil;
+import com.iflytek.auth.common.common.enums.OperationType;
+import com.iflytek.auth.common.common.enums.TargetType;
 import com.iflytek.auth.common.dto.*;
 import com.iflytek.auth.common.pojo.*;
 import org.apache.commons.lang3.StringUtils;
@@ -102,5 +104,34 @@ public class PoCommonUtils {
         sysAudit.setAuditor(sysAudit.getOperator());
         sysAudit.setAuditTime(sysAudit.getOperateTime());
         sysAudit.setAuditorIp(sysAudit.getOperateIp());
+    }
+
+    public static SysLog buildSysLog(Integer targetId, String oldValue, String newValue,
+                                   Integer targetType) {
+        SysLog sysLog = new SysLog();
+        sysLog.setType(targetType);
+        sysLog.setTargetId(targetId);
+        sysLog.setOldValue(oldValue);
+        sysLog.setNewValue(newValue);
+        sysLog.setStatus(1);
+        setOperationInfo(sysLog);
+
+        return sysLog;
+    }
+
+    public static SysAudit buildSysAudit(SysLog sysLog, Integer operationType) {
+        SysAudit sysAudit = new SysAudit();
+        sysAudit.setTargetId(sysLog.getTargetId());
+        sysAudit.setTargetType(sysLog.getType());
+        sysAudit.setNewValue(sysLog.getNewValue());
+        sysAudit.setOldValue(sysLog.getOldValue());
+        sysAudit.setOperationType(operationType);
+        sysAudit.setStatus(0);
+        setOperationInfo(sysAudit);
+        setSubmitterInfo(sysAudit);
+        sysAudit.setDetail(String.format("用户%s对%s进行了%s", sysAudit.getSubmitter(),
+                TargetType.getTargetType(sysAudit.getTargetType()), OperationType.getOperation(sysAudit.getOperationType())));
+
+        return sysAudit;
     }
 }

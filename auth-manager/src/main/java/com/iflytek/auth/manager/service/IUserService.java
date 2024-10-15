@@ -20,4 +20,10 @@ public interface IUserService {
     RestResponse deleteUser(Integer userId);
 
     RestResponse login(SysUserDto sysUserDto);
+
+    RestResponse submitAddUser(SysUserDto sysUserDto);
+
+    RestResponse submitUpdateUser(SysUserDto sysUserDto);
+
+    RestResponse submitDeleteUser(SysUserDto sysUserDto);
 }

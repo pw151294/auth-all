@@ -1,5 +1,6 @@
 package com.iflytek.auth.common.common.enums;
 
+import com.iflytek.itsc.web.exception.BaseBizException;
 import lombok.Getter;
 
 /**
@@ -19,5 +20,15 @@ public enum OperationType {
     OperationType(Integer type, String desc) {
         this.type = type;
         this.desc = desc;
+    }
+
+    public static String getOperation(Integer type) {
+        for (OperationType value : values()) {
+            if (value.getType().equals(type)) {
+                return value.getDesc();
+            }
+        }
+
+        throw new BaseBizException(String.format("不存在这样的操作类型：%s", type));
     }
 }

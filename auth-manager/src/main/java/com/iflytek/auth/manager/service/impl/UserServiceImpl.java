@@ -7,12 +7,13 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.iflytek.auth.common.common.Validator;
+import com.iflytek.auth.common.common.enums.OperationType;
 import com.iflytek.auth.common.common.enums.TargetType;
 import com.iflytek.auth.common.common.utils.PoCommonUtils;
 import com.iflytek.auth.common.dao.SysRoleUserMapper;
 import com.iflytek.auth.common.dao.SysUserMapper;
-import com.iflytek.auth.common.dto.SysLogDto;
 import com.iflytek.auth.common.dto.SysUserDto;
+import com.iflytek.auth.common.pojo.SysAudit;
 import com.iflytek.auth.common.pojo.SysLog;
 import com.iflytek.auth.common.pojo.SysUser;
 import com.iflytek.auth.common.vo.SysUserVo;
@@ -50,6 +51,10 @@ public class UserServiceImpl implements IUserService {
     @Qualifier(value = "logTask")
     private SysTask logTask;
 
+    @Autowired
+    @Qualifier(value = "auditTask")
+    private SysTask auditTask;
+
     @Override
     public RestResponse<PageInfo<SysUserVo>> pageUsers(SysUserDto sysUserDto) {
         Preconditions.checkNotNull(sysUserDto.getDeptId(), "用户所在部门ID不能为空");
@@ -71,12 +76,8 @@ public class UserServiceImpl implements IUserService {
         userMapper.insert(sysUser);
 
         //记录权限更新日志
-        SysLogDto sysLogDto = new SysLogDto();
-        sysLogDto.setType(TargetType.USER.getType());
-        sysLogDto.setTargetId(sysUser.getId());
-        sysLogDto.setOldValue("");
-        sysLogDto.setNewValue(JSON.toJSONString(sysUser));
-        logService.addLog(sysLogDto);
+        SysLog sysLog = PoCommonUtils.buildSysLog(sysUser.getId(), "", JSON.toJSONString(sysUser), TargetType.USER.getType());
+        logTask.offer(sysLog);
 
         return RestResponse.buildSuccess("新增用户成功");
     }
@@ -97,13 +98,7 @@ public class UserServiceImpl implements IUserService {
         userMapper.updateById(sysUser);
 
         //记录权限更新日志
-        SysLog sysLog = new SysLog();
-        sysLog.setType(TargetType.USER.getType());
-        sysLog.setTargetId(sysUser.getId());
-        sysLog.setOldValue(oldValue);
-        sysLog.setNewValue(newValue);
-        sysLog.setStatus(1);
-        PoCommonUtils.setOperationInfo(sysLog);
+        SysLog sysLog = PoCommonUtils.buildSysLog(sysUser.getId(), oldValue, newValue, TargetType.USER.getType());
         logTask.offer(sysLog);
 
         return RestResponse.buildSuccess("更新用户信息成功");
@@ -121,6 +116,10 @@ public class UserServiceImpl implements IUserService {
         //删除用户所在的角色关联关系
         roleUserMapper.deleteByUserId(userId);
 
+        //记录权限更新日志
+        SysLog sysLog = PoCommonUtils.buildSysLog(userId, "", "", TargetType.USER.getType());
+        logTask.offer(sysLog);
+
         return RestResponse.buildSuccess("删除用户成功");
     }
 
@@ -136,5 +135,59 @@ public class UserServiceImpl implements IUserService {
         }
 
         return RestResponse.buildSuccess(sysUser);
+    }
+
+    @Override
+    public RestResponse submitAddUser(SysUserDto sysUserDto) {
+        Validator.validateUserAdd(sysUserDto);
+        if (userMapper.countByKeyWord(sysUserDto) > 0) {
+            return RestResponse.buildError("用户名、邮箱或者手机号不唯一");
+        }
+
+        //获取操作相关信息
+        SysUser sysUser = new SysUser();
+        PoCommonUtils.copyUserProperties(sysUserDto, sysUser);
+        String newValue = JSON.toJSONString(sysUser);
+
+        //创建审核记录
+        SysLog sysLog = PoCommonUtils.buildSysLog(null, "", newValue, TargetType.USER.getType());
+        SysAudit sysAudit = PoCommonUtils.buildSysAudit(sysLog, OperationType.ADD.getType());
+        auditTask.offer(sysAudit);
+
+        return RestResponse.buildSuccess("新增用户计划已经提交审核");
+    }
+
+    @Override
+    public RestResponse submitUpdateUser(SysUserDto sysUserDto) {
+        Validator.validateUserUpdate(sysUserDto);
+        SysUser sysUser = userMapper.selectById(sysUserDto.getId());
+        Preconditions.checkNotNull(sysUser, "被操作的用户不能为空");
+        if (userMapper.countByKeyWord(sysUserDto) > 0) {
+            return RestResponse.buildError("用户名、邮箱或者手机号不唯一");
+        }
+
+        //获取操作相关信息
+        String oldValue = JSON.toJSONString(sysUser);
+        PoCommonUtils.copyUserProperties(sysUserDto, sysUser);
+        String newValue = JSON.toJSONString(sysUser);
+
+        //创建审核记录
+        SysLog sysLog = PoCommonUtils.buildSysLog(sysUser.getId(), oldValue, newValue, TargetType.USER.getType());
+        SysAudit sysAudit = PoCommonUtils.buildSysAudit(sysLog, OperationType.UPDATE.getType());
+        auditTask.offer(sysAudit);
+
+        return RestResponse.buildSuccess("更新用户计划已经提交审核");
+    }
+
+    @Override
+    public RestResponse submitDeleteUser(SysUserDto sysUserDto) {
+        Preconditions.checkNotNull(sysUserDto.getId(), "被删除的用户ID不能为空");
+
+        //创建审核记录/
+        SysLog sysLog = PoCommonUtils.buildSysLog(sysUserDto.getId(), "", "", TargetType.USER.getType());
+        SysAudit sysAudit = PoCommonUtils.buildSysAudit(sysLog, OperationType.DELETE.getType());
+        auditTask.offer(sysAudit);
+
+        return RestResponse.buildSuccess("删除用户计划已经提交审核");
     }
 }
