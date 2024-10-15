@@ -38,4 +38,19 @@ public class UserController {
     public RestResponse deleteUser(@PathVariable Integer userId) {
         return userService.deleteUser(userId);
     }
+
+    @PostMapping("/submit/add")
+    public RestResponse submtiAddUser(@RequestBody SysUserDto sysUserDto) {
+        return userService.submitAddUser(sysUserDto);
+    }
+
+    @PostMapping("/submit/update")
+    public RestResponse submitUpdateUser(@RequestBody SysUserDto sysUserDto) {
+        return userService.submitUpdateUser(sysUserDto);
+    }
+
+    @PostMapping("/submit/delete/{userId}")
+    public RestResponse submitDeleteUser(@PathVariable Integer userId) {
+        return userService.submitDeleteUser(userId);
+    }
 }

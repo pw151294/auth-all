@@ -28,13 +28,14 @@ public class AuditHandler {
     private Map<Integer, PojoHandler> typeHandlerMap = Maps.newHashMap();
 
     private Runnable task = () -> {
+        log.info("begin to fetch audit records from queue >>>>>>>>>>");
         //确定需要获取数据的条数
         int size = auditQueue.size();
         int pollCnt = Math.min(size, 16);
         try {
             for (int i = 0; i < pollCnt; i++) {
                 SysAudit sysAudit = auditQueue.poll(1, TimeUnit.SECONDS);
-                if (sysAudit == null || sysAudit.getStatus().equals(0) || sysAudit.getResult().equals(2)) {
+                if (sysAudit == null || sysAudit.getStatus().equals(0) || sysAudit.getResult().equals(0)) {
                     //审核记录为空 或未审核 或审核结果为不通过 不进行任何操作
                     continue;
                 }
@@ -42,6 +43,7 @@ public class AuditHandler {
                 PojoHandler handler = typeHandlerMap.get(sysAudit.getTargetType());
                 handler.handle(sysAudit);
             }
+            log.info("handle operation success!");
         } catch (Exception e) {
             log.error("save data into database failed:{}", e.getLocalizedMessage());
         }
@@ -68,6 +70,7 @@ public class AuditHandler {
     public void offer(List<SysAudit> audits) {
         try {
             auditQueue.addAll(audits);
+            log.info("save audit records into queue success!");
         } catch (Exception e) {
             Thread.currentThread().interrupt();
             log.error("batch save audit record failed: {}", e.getLocalizedMessage());

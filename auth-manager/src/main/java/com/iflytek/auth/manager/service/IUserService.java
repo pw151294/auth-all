@@ -25,5 +25,5 @@ public interface IUserService {
 
     RestResponse submitUpdateUser(SysUserDto sysUserDto);
 
-    RestResponse submitDeleteUser(SysUserDto sysUserDto);
+    RestResponse submitDeleteUser(Integer userId);
 }

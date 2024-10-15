@@ -180,11 +180,11 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public RestResponse submitDeleteUser(SysUserDto sysUserDto) {
-        Preconditions.checkNotNull(sysUserDto.getId(), "被删除的用户ID不能为空");
+    public RestResponse submitDeleteUser(Integer userId) {
+        Preconditions.checkNotNull(userId, "被删除的用户ID不能为空");
 
         //创建审核记录/
-        SysLog sysLog = PoCommonUtils.buildSysLog(sysUserDto.getId(), "", "", TargetType.USER.getType());
+        SysLog sysLog = PoCommonUtils.buildSysLog(userId, "", "", TargetType.USER.getType());
         SysAudit sysAudit = PoCommonUtils.buildSysAudit(sysLog, OperationType.DELETE.getType());
         auditTask.offer(sysAudit);
 
