@@ -6,15 +6,19 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
+
+import com.iflytek.auth.common.vo.SysNodeVo;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  *
  * @TableName sys_acl_module
  */
+@EqualsAndHashCode(callSuper = true)
 @TableName(value ="sys_acl_module")
 @Data
-public class SysAclModule implements Serializable {
+public class SysAclModule extends SysNodeVo implements Serializable {
     /**
      * 权限模块id
      */

@@ -1,6 +1,7 @@
 package com.iflytek.auth.manager.service;
 
 import com.iflytek.auth.common.dto.SysDeptDto;
+import com.iflytek.auth.common.pojo.SysDept;
 import com.iflytek.auth.common.vo.SysDeptVo;
 import com.iflytek.itsc.web.response.RestResponse;
 
@@ -19,4 +20,12 @@ public interface IDeptService {
     RestResponse deletDept(Integer deptId);
 
     RestResponse<List<SysDeptVo>> deptTree();
+
+    RestResponse submitAddDept(SysDeptDto sysDeptDto);
+
+    RestResponse submitUpdateDept(SysDeptDto sysDeptDto);
+
+    RestResponse submitDeleteDept(Integer deptId);
+
+    void updateAll(List<SysDept> sysDepts);
 }

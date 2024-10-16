@@ -6,15 +6,19 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
+
+import com.iflytek.auth.common.vo.SysNodeVo;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  *
  * @TableName sys_dept
  */
+@EqualsAndHashCode(callSuper = true)
 @TableName(value ="sys_dept")
 @Data
-public class SysDept implements Serializable {
+public class SysDept extends SysNodeVo implements Serializable {
     /**
      * 部门id
      */

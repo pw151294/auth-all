@@ -44,4 +44,19 @@ public class DeptController {
     public RestResponse<List<SysDeptVo>> deptTree() {
         return deptService.deptTree();
     }
+
+    @PostMapping("/submit/add")
+    public RestResponse subAddDept(@RequestBody @Validated SysDeptDto sysDeptDto) {
+        return deptService.submitAddDept(sysDeptDto);
+    }
+
+    @PostMapping("/submit/update")
+    public RestResponse submitUpdateDept(@RequestBody @Validated SysDeptDto sysDeptDto) {
+        return deptService.submitUpdateDept(sysDeptDto);
+    }
+
+    @PostMapping("/submit/delete/{deptId}")
+    public RestResponse submitDeleteDept(@PathVariable Integer deptId) {
+        return deptService.submitDeleteDept(deptId);
+    }
 }
