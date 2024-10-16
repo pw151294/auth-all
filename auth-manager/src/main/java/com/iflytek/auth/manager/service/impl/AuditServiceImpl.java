@@ -1,5 +1,6 @@
 package com.iflytek.auth.manager.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iflytek.auth.common.common.utils.PoCommonUtils;
 import com.iflytek.auth.common.dao.SysAuditMapper;
 import com.iflytek.auth.common.dto.SysAuditDto;
@@ -24,7 +25,7 @@ import static com.iflytek.auth.common.dto.SysAuditDto.SysAuditItem;
  */
 @Slf4j
 @Service
-public class AuditServiceImpl implements IAuditService {
+public class AuditServiceImpl extends ServiceImpl<SysAuditMapper, SysAudit> implements IAuditService {
 
     @Autowired
     private SysAuditMapper auditMapper;
@@ -45,9 +46,10 @@ public class AuditServiceImpl implements IAuditService {
             PoCommonUtils.setAuditorInfo(sysAudit);
             PoCommonUtils.setOperationInfo(sysAudit);
             //TODO 在for循环内部执行sql 多次IO操作需要关注性能问题
-            auditMapper.updateById(sysAudit);
+//            auditMapper.updateById(sysAudit);
         });
         //更新审核表 并将审核信息提交队列
+        this.saveOrUpdateBatch(sysAudits);
         auditHandler.offer(sysAudits);
 
         return RestResponse.buildSuccess("审核结果提交成功！");
