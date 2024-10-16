@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.iflytek.auth.common.common.Validator;
 import com.iflytek.auth.common.common.enums.OperationType;
+import com.iflytek.auth.common.common.enums.TargetType;
 import com.iflytek.auth.common.common.utils.PoCommonUtils;
 import com.iflytek.auth.common.common.utils.TreeUtils;
 import com.iflytek.auth.common.dao.*;
@@ -14,8 +15,8 @@ import com.iflytek.auth.common.dto.SysRoleUserDto;
 import com.iflytek.auth.common.pojo.*;
 import com.iflytek.auth.common.vo.SysRoleAclModuleVo;
 import com.iflytek.auth.common.vo.SysRoleAclVo;
-import com.iflytek.auth.common.common.enums.TargetType;
 import com.iflytek.auth.manager.common.task.SysTask;
+import com.iflytek.auth.manager.service.IAuditService;
 import com.iflytek.auth.manager.service.ILogService;
 import com.iflytek.auth.manager.service.IRoleService;
 import com.iflytek.itsc.web.response.RestResponse;
@@ -59,6 +60,9 @@ public class RoleServiceImpl implements IRoleService {
     @Autowired
     @Qualifier(value = "auditTask")
     private SysTask auditTask;
+
+    @Autowired
+    private IAuditService auditService;
 
     @Override
     public RestResponse<List<SysRoleAclModuleVo>> roleAclTree(Integer roleId, Integer userId) {
@@ -210,6 +214,9 @@ public class RoleServiceImpl implements IRoleService {
             return RestResponse.buildError("存在同名的角色");
         }
         //TODO 校验待审核的角色新增计划里 是否有同名的角色
+        if (auditService.hasSameRoleName(sysRoleDto.getName())) {
+            return RestResponse.buildError("在待审核的新增角色计划里，相同的角色名称已经被占用了");
+        }
 
         SysRole sysRole = new SysRole();
         PoCommonUtils.copyRoleProperties(sysRoleDto, sysRole);
@@ -227,7 +234,12 @@ public class RoleServiceImpl implements IRoleService {
     @Override
     public RestResponse submitUpdateRole(SysRoleDto sysRoleDto) {
         Validator.validateRoleUpdate(sysRoleDto);
-        //TODO 校验是否有对该角色的更新或者删除计划待审核
+        //校验是否有对该角色的更新或者删除计划待审核
+        if (auditService.hasAudit(sysRoleDto.getId(), TargetType.ROLE.getType(), OperationType.UPDATE.getType())
+                || auditService.hasAudit(sysRoleDto.getId(), TargetType.ROLE.getType(), OperationType.DELETE.getType())) {
+            return RestResponse.buildError("存在待审核的更新或删除角色的计划！");
+        }
+
         SysRole sysRole = roleMapper.selectById(sysRoleDto.getId());
         if (sysRole == null) {
             return RestResponse.buildError("被更新的角色不存在");
@@ -248,7 +260,12 @@ public class RoleServiceImpl implements IRoleService {
     @Override
     public RestResponse submitDeleteRole(Integer roleId) {
         Preconditions.checkNotNull(roleId, "被删除角色ID不能为空");
-        //TODO 校验是否有对该角色的更新或者删除计划待审核
+        //校验是否有对该角色的更新或者删除计划待审核
+        if (auditService.hasAudit(roleId, TargetType.ROLE.getType(), OperationType.UPDATE.getType())
+                || auditService.hasAudit(roleId, TargetType.ROLE.getType(), OperationType.DELETE.getType())) {
+            return RestResponse.buildError("存在待审核的更新或删除角色的计划！");
+        }
+
         SysLog sysLog = PoCommonUtils.buildSysLog(roleId, "", "", TargetType.ROLE.getType());
         SysAudit sysAudit = PoCommonUtils.buildSysAudit(sysLog, OperationType.DELETE.getType());
         auditTask.offer(sysAudit);
@@ -259,7 +276,11 @@ public class RoleServiceImpl implements IRoleService {
     @Override
     public RestResponse submitSaveOrUpdateRoleUser(SysRoleUserDto sysRoleUserDto) {
         Integer roleId = sysRoleUserDto.getRoleId();
-        //TODO 校验是否有对该角色所关联用户关系的修改计划待审核
+        //校验是否有对该角色所关联用户关系的修改计划待审核
+        if (auditService.hasAudit(sysRoleUserDto.getRoleId(), TargetType.ROLE_USER.getType(), OperationType.UPDATE.getType())) {
+            return RestResponse.buildError("存在对该角色所关联用户关系的修改计划待审核");
+        }
+
         Preconditions.checkNotNull(roleId, "待分配用户关系的角色ID不能为空");
         String oldValue = JSON.toJSONString(roleUserMapper.findUserIdsByRoleId(roleId));
         String newValue = JSON.toJSONString(sysRoleUserDto.getUserIds());
@@ -273,7 +294,11 @@ public class RoleServiceImpl implements IRoleService {
     @Override
     public RestResponse submitSaveOrUpdateRoleAcl(SysRoleAclDto sysRoleAclDto) {
         Integer roleId = sysRoleAclDto.getRoleId();
-        //TODO 校验是否有对该角色所关联的权限关系的修改计划待审核
+        //校验是否有对该角色所关联的权限关系的修改计划待审核
+        if (auditService.hasAudit(sysRoleAclDto.getRoleId(), TargetType.ROLE_ACL.getType(), OperationType.UPDATE.getType())) {
+            return RestResponse.buildError("存在对该角色所关联的权限关系的修改计划待审核");
+        }
+
         Preconditions.checkNotNull(roleId, "待分配权限关系的角色ID不能为空");
         String oldValue = JSON.toJSONString(roleAclMapper.findAclIdsByRoleId(roleId));
         String newValue = JSON.toJSONString(sysRoleAclDto.getAclIds());

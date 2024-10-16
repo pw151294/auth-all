@@ -18,7 +18,7 @@ import com.iflytek.auth.common.pojo.SysLog;
 import com.iflytek.auth.common.pojo.SysUser;
 import com.iflytek.auth.common.vo.SysUserVo;
 import com.iflytek.auth.manager.common.task.SysTask;
-import com.iflytek.auth.manager.service.ILogService;
+import com.iflytek.auth.manager.service.IAuditService;
 import com.iflytek.auth.manager.service.IUserService;
 import com.iflytek.itsc.web.exception.BaseBizException;
 import com.iflytek.itsc.web.response.RestResponse;
@@ -45,7 +45,7 @@ public class UserServiceImpl implements IUserService {
     private SysRoleUserMapper roleUserMapper;
 
     @Autowired
-    private ILogService logService;
+    private IAuditService auditService;
 
     @Autowired
     @Qualifier(value = "logTask")
@@ -143,7 +143,9 @@ public class UserServiceImpl implements IUserService {
         if (userMapper.countByKeyWord(sysUserDto) > 0) {
             return RestResponse.buildError("用户名、邮箱或者手机号不唯一");
         }
-        //TODO 校验待审核的用户新增计划里 是否有相同的用户名邮箱或者手机号
+        if (auditService.hasSameUserInfo(sysUserDto.getUsername(),sysUserDto.getMail(),sysUserDto.getTelephone())) {
+            return RestResponse.buildError("在待审核的新增用户计划里，用户名、邮箱或者手机号已经被占用");
+        }
 
         //获取操作相关信息
         SysUser sysUser = new SysUser();
@@ -161,7 +163,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public RestResponse submitUpdateUser(SysUserDto sysUserDto) {
         Validator.validateUserUpdate(sysUserDto);
-        //TODO 校验是否有对该用户的修改或者删除计划待审核
+        //校验是否有对该用户的修改或者删除计划待审核
+        if (auditService.hasAudit(sysUserDto.getId(), TargetType.USER.getType(), OperationType.UPDATE.getType())
+                || auditService.hasAudit(sysUserDto.getId(),TargetType.USER.getType(),OperationType.DELETE.getType())) {
+            return RestResponse.buildError("存在对该用户的更新或删除计划待审核");
+        }
         SysUser sysUser = userMapper.selectById(sysUserDto.getId());
         Preconditions.checkNotNull(sysUser, "被操作的用户不能为空");
         if (userMapper.countByKeyWord(sysUserDto) > 0) {
@@ -184,7 +190,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public RestResponse submitDeleteUser(Integer userId) {
         Preconditions.checkNotNull(userId, "被删除的用户ID不能为空");
-        //TODO 校验是否有对该用户的修改或者删除计划待审核
+        ///校验是否有对该用户的修改或者删除计划待审核
+        if (auditService.hasAudit(userId, TargetType.USER.getType(), OperationType.UPDATE.getType())
+                || auditService.hasAudit(userId,TargetType.USER.getType(),OperationType.DELETE.getType())) {
+            return RestResponse.buildError("存在对该用户的更新或删除计划待审核");
+        }
         //创建审核记录/
         SysLog sysLog = PoCommonUtils.buildSysLog(userId, "", "", TargetType.USER.getType());
         SysAudit sysAudit = PoCommonUtils.buildSysAudit(sysLog, OperationType.DELETE.getType());

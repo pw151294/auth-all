@@ -11,4 +11,10 @@ import com.iflytek.itsc.web.response.RestResponse;
 public interface IAuditService {
 
     RestResponse audit(SysAuditDto sysAuditDto);
+
+    Boolean hasAudit(Integer targetId, Integer targetType, Integer operationType);
+
+    Boolean hasSameRoleName(String roleName);
+
+    Boolean hasSameUserInfo(String username, String mail, String telephone);
 }
