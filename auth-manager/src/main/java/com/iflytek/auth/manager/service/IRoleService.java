@@ -23,10 +23,20 @@ public interface IRoleService {
 
     RestResponse deleteRole(Integer roleId);
 
-    RestResponse<List<SysRole>> list();
+    RestResponse<List<SysRole>> listAll();
 
     RestResponse saveOrUpdateRoleUser(SysRoleUserDto sysRoleUserDto);
 
     RestResponse saveOrUpdateRoleAcl(SysRoleAclDto sysRoleAclDto);
+
+    RestResponse submitAddRole(SysRoleDto sysRoleDto);
+
+    RestResponse submitUpdateRole(SysRoleDto sysRoleDto);
+
+    RestResponse submitDeleteRole(Integer roleId);
+
+    RestResponse submitSaveOrUpdateRoleUser(SysRoleUserDto sysRoleUserDto);
+
+    RestResponse submitSaveOrUpdateRoleAcl(SysRoleAclDto sysRoleAclDto);
 }
 

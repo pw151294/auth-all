@@ -143,6 +143,7 @@ public class UserServiceImpl implements IUserService {
         if (userMapper.countByKeyWord(sysUserDto) > 0) {
             return RestResponse.buildError("用户名、邮箱或者手机号不唯一");
         }
+        //TODO 校验待审核的用户新增计划里 是否有相同的用户名邮箱或者手机号
 
         //获取操作相关信息
         SysUser sysUser = new SysUser();
@@ -160,6 +161,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public RestResponse submitUpdateUser(SysUserDto sysUserDto) {
         Validator.validateUserUpdate(sysUserDto);
+        //TODO 校验是否有对该用户的修改或者删除计划待审核
         SysUser sysUser = userMapper.selectById(sysUserDto.getId());
         Preconditions.checkNotNull(sysUser, "被操作的用户不能为空");
         if (userMapper.countByKeyWord(sysUserDto) > 0) {
@@ -182,7 +184,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public RestResponse submitDeleteUser(Integer userId) {
         Preconditions.checkNotNull(userId, "被删除的用户ID不能为空");
-
+        //TODO 校验是否有对该用户的修改或者删除计划待审核
         //创建审核记录/
         SysLog sysLog = PoCommonUtils.buildSysLog(userId, "", "", TargetType.USER.getType());
         SysAudit sysAudit = PoCommonUtils.buildSysAudit(sysLog, OperationType.DELETE.getType());

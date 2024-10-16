@@ -54,7 +54,7 @@ public class RoleController {
 
     @GetMapping("/list")
     public RestResponse<List<SysRole>> listRoles() {
-        return roleService.list();
+        return roleService.listAll();
     }
 
     @PostMapping("/user/saveOrUpdate")
@@ -65,5 +65,30 @@ public class RoleController {
     @PostMapping("/acl/saveOrUpdate")
     public RestResponse saveOrUpdateRoleAcl(@RequestBody SysRoleAclDto sysRoleAclDto) {
         return roleService.saveOrUpdateRoleAcl(sysRoleAclDto);
+    }
+
+    @PostMapping("/submit/add")
+    public RestResponse submitAddRole(@RequestBody SysRoleDto sysRoleDto) {
+        return roleService.submitAddRole(sysRoleDto);
+    }
+
+    @PostMapping("/submit/update")
+    public RestResponse submitUpdateRole(@RequestBody SysRoleDto sysRoleDto) {
+        return roleService.submitUpdateRole(sysRoleDto);
+    }
+
+    @PostMapping("/submit/delete/{roleId}")
+    public RestResponse submitDeleteRole(@PathVariable Integer roleId) {
+        return roleService.submitDeleteRole(roleId);
+    }
+
+    @PostMapping("/submit/user/saveOrUpdate")
+    public RestResponse submitSaveOrUpdateRoleUser(@RequestBody SysRoleUserDto sysRoleUserDto) {
+        return roleService.submitSaveOrUpdateRoleUser(sysRoleUserDto);
+    }
+
+    @PostMapping("/submit/acl/saveOrUpdate")
+    public RestResponse submitSaveOrUpdateRoleAcl(@RequestBody SysRoleAclDto sysRoleAclDto) {
+        return roleService.submitSaveOrUpdateRoleAcl(sysRoleAclDto);
     }
 }

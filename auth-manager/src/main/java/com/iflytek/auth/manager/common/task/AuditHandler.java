@@ -43,7 +43,6 @@ public class AuditHandler {
                 PojoHandler handler = typeHandlerMap.get(sysAudit.getTargetType());
                 handler.handle(sysAudit);
             }
-            log.info("handle operation success!");
         } catch (Exception e) {
             log.error("save data into database failed:{}", e.getLocalizedMessage());
         }
@@ -53,7 +52,7 @@ public class AuditHandler {
         log.info("begin to init audit handler >>>>>>>>>>");
         this.auditQueue = new LinkedBlockingQueue<>(queueSize);
         //启动周期任务方法
-        executorService.scheduleAtFixedRate(task, 0, 30, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(task, 0, 10, TimeUnit.SECONDS);
         log.info("init audit handler success!");
     }
 

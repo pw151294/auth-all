@@ -3,6 +3,7 @@ package com.iflytek.auth.manager.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.iflytek.auth.common.common.Validator;
+import com.iflytek.auth.common.common.enums.OperationType;
 import com.iflytek.auth.common.common.utils.PoCommonUtils;
 import com.iflytek.auth.common.common.utils.TreeUtils;
 import com.iflytek.auth.common.dao.*;
@@ -14,10 +15,12 @@ import com.iflytek.auth.common.pojo.*;
 import com.iflytek.auth.common.vo.SysRoleAclModuleVo;
 import com.iflytek.auth.common.vo.SysRoleAclVo;
 import com.iflytek.auth.common.common.enums.TargetType;
+import com.iflytek.auth.manager.common.task.SysTask;
 import com.iflytek.auth.manager.service.ILogService;
 import com.iflytek.auth.manager.service.IRoleService;
 import com.iflytek.itsc.web.response.RestResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -51,6 +54,11 @@ public class RoleServiceImpl implements IRoleService {
 
     @Autowired
     private ILogService logService;
+
+
+    @Autowired
+    @Qualifier(value = "auditTask")
+    private SysTask auditTask;
 
     @Override
     public RestResponse<List<SysRoleAclModuleVo>> roleAclTree(Integer roleId, Integer userId) {
@@ -145,7 +153,7 @@ public class RoleServiceImpl implements IRoleService {
     }
 
     @Override
-    public RestResponse<List<SysRole>> list() {
+    public RestResponse<List<SysRole>> listAll() {
         List<SysRole> sysRoles = roleMapper.selectList(null);
         return RestResponse.buildSuccess(sysRoles);
     }
@@ -156,8 +164,6 @@ public class RoleServiceImpl implements IRoleService {
         Integer roleId = sysRoleUserDto.getRoleId();
         Preconditions.checkNotNull(roleId, "待分配用户关系的角色ID不能为空");
         //先删除后新增
-        String oldValue = JSON.toJSONString(roleUserMapper.findUserIdsByRoleId(roleId));
-        String newValue = JSON.toJSONString(sysRoleUserDto.getUserIds());
         roleUserMapper.deleteByRoleId(roleId);
         if (!CollectionUtils.isEmpty(sysRoleUserDto.getUserIds())) {
             List<SysRoleUser> roleUsers = sysRoleUserDto.getUserIds().stream()
@@ -171,14 +177,6 @@ public class RoleServiceImpl implements IRoleService {
             roleUserMapper.insertBatch(roleUsers);
         }
 
-        //记录权限更新日志
-        SysLogDto sysLogDto = new SysLogDto();
-        sysLogDto.setType(TargetType.ROLE_USER.getType());
-        sysLogDto.setTargetId(roleId);
-        sysLogDto.setOldValue(oldValue);
-        sysLogDto.setNewValue(newValue);
-        logService.addLog(sysLogDto);
-
         return RestResponse.buildSuccess("配置用户角色关系成功");
     }
 
@@ -189,8 +187,6 @@ public class RoleServiceImpl implements IRoleService {
         Integer roleId = sysRoleAclDto.getRoleId();
         Preconditions.checkNotNull(roleId, "待分配权限关系的角色ID不能为空");
         //先删除后新增
-        String oldValue = JSON.toJSONString(roleAclMapper.findAclIdsByRoleId(roleId));
-        String newValue = JSON.toJSONString(sysRoleAclDto.getAclIds());
         roleAclMapper.deleteByRoleId(roleId);
         if (!CollectionUtils.isEmpty(sysRoleAclDto.getAclIds())) {
             List<SysRoleAcl> sysRoleAcls = sysRoleAclDto.getAclIds().stream()
@@ -204,14 +200,87 @@ public class RoleServiceImpl implements IRoleService {
             roleAclMapper.insertBatch(sysRoleAcls);
         }
 
-        //记录权限更新日志
-        SysLogDto sysLogDto = new SysLogDto();
-        sysLogDto.setType(TargetType.ROLE_ACL.getType());
-        sysLogDto.setTargetId(roleId);
-        sysLogDto.setOldValue(oldValue);
-        sysLogDto.setNewValue(newValue);
-        logService.addLog(sysLogDto);
-
         return RestResponse.buildSuccess("配置角色权限关系成功");
+    }
+
+    @Override
+    public RestResponse submitAddRole(SysRoleDto sysRoleDto) {
+        Validator.validateRoleAdd(sysRoleDto);
+        if (roleMapper.countByName(sysRoleDto.getName()) > 0) {
+            return RestResponse.buildError("存在同名的角色");
+        }
+        //TODO 校验待审核的角色新增计划里 是否有同名的角色
+
+        SysRole sysRole = new SysRole();
+        PoCommonUtils.copyRoleProperties(sysRoleDto, sysRole);
+        PoCommonUtils.setOperationInfo(sysRole);
+        String newValue = JSON.toJSONString(sysRole);
+
+        //创建审核记录
+        SysLog sysLog = PoCommonUtils.buildSysLog(null, "", newValue, TargetType.ROLE.getType());
+        SysAudit sysAudit = PoCommonUtils.buildSysAudit(sysLog, OperationType.ADD.getType());
+        auditTask.offer(sysAudit);
+
+        return RestResponse.buildSuccess("提交新增角色计划成功!");
+    }
+
+    @Override
+    public RestResponse submitUpdateRole(SysRoleDto sysRoleDto) {
+        Validator.validateRoleUpdate(sysRoleDto);
+        //TODO 校验是否有对该角色的更新或者删除计划待审核
+        SysRole sysRole = roleMapper.selectById(sysRoleDto.getId());
+        if (sysRole == null) {
+            return RestResponse.buildError("被更新的角色不存在");
+        }
+        String oldValue = JSON.toJSONString(sysRole);
+        PoCommonUtils.copyRoleProperties(sysRoleDto, sysRole);
+        PoCommonUtils.setOperationInfo(sysRole);
+        String newValue = JSON.toJSONString(sysRole);
+
+        //创建审核记录
+        SysLog sysLog = PoCommonUtils.buildSysLog(sysRoleDto.getId(), oldValue, newValue, TargetType.ROLE.getType());
+        SysAudit sysAudit = PoCommonUtils.buildSysAudit(sysLog, OperationType.UPDATE.getType());
+        auditTask.offer(sysAudit);
+
+        return RestResponse.buildSuccess("更新角色计划提交成功！");
+    }
+
+    @Override
+    public RestResponse submitDeleteRole(Integer roleId) {
+        Preconditions.checkNotNull(roleId, "被删除角色ID不能为空");
+        //TODO 校验是否有对该角色的更新或者删除计划待审核
+        SysLog sysLog = PoCommonUtils.buildSysLog(roleId, "", "", TargetType.ROLE.getType());
+        SysAudit sysAudit = PoCommonUtils.buildSysAudit(sysLog, OperationType.DELETE.getType());
+        auditTask.offer(sysAudit);
+
+        return RestResponse.buildSuccess("删除角色计划提交成功！");
+    }
+
+    @Override
+    public RestResponse submitSaveOrUpdateRoleUser(SysRoleUserDto sysRoleUserDto) {
+        Integer roleId = sysRoleUserDto.getRoleId();
+        //TODO 校验是否有对该角色所关联用户关系的修改计划待审核
+        Preconditions.checkNotNull(roleId, "待分配用户关系的角色ID不能为空");
+        String oldValue = JSON.toJSONString(roleUserMapper.findUserIdsByRoleId(roleId));
+        String newValue = JSON.toJSONString(sysRoleUserDto.getUserIds());
+        SysLog sysLog = PoCommonUtils.buildSysLog(roleId, oldValue, newValue, TargetType.ROLE_USER.getType());
+        SysAudit sysAudit = PoCommonUtils.buildSysAudit(sysLog, OperationType.UPDATE.getType());
+        auditTask.offer(sysAudit);
+
+        return RestResponse.buildSuccess("修改角色用户关系计划提交成功！");
+    }
+
+    @Override
+    public RestResponse submitSaveOrUpdateRoleAcl(SysRoleAclDto sysRoleAclDto) {
+        Integer roleId = sysRoleAclDto.getRoleId();
+        //TODO 校验是否有对该角色所关联的权限关系的修改计划待审核
+        Preconditions.checkNotNull(roleId, "待分配权限关系的角色ID不能为空");
+        String oldValue = JSON.toJSONString(roleAclMapper.findAclIdsByRoleId(roleId));
+        String newValue = JSON.toJSONString(sysRoleAclDto.getAclIds());
+        SysLog sysLog = PoCommonUtils.buildSysLog(roleId, oldValue, newValue, TargetType.ROLE_ACL.getType());
+        SysAudit sysAudit = PoCommonUtils.buildSysAudit(sysLog, OperationType.UPDATE.getType());
+        auditTask.offer(sysAudit);
+
+        return RestResponse.buildSuccess("修改角色权限关系计划提交成功！");
     }
 }

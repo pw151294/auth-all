@@ -63,8 +63,8 @@ public class PoCommonUtils {
         sysRole.setName(sysRoleDto.getName());
         sysRole.setType(sysRoleDto.getType());
         sysRole.setStatus(sysRoleDto.getStatus() == null ? 1 : sysRoleDto.getStatus());
-        if (StringUtils.isNotBlank(sysRoleDto.getName())) {
-            sysRole.setName(sysRoleDto.getName());
+        if (StringUtils.isNotBlank(sysRoleDto.getRemark())) {
+            sysRole.setRemark(sysRoleDto.getRemark());
         }
     }
 
@@ -133,5 +133,11 @@ public class PoCommonUtils {
                 TargetType.getTargetType(sysAudit.getTargetType()), OperationType.getOperation(sysAudit.getOperationType())));
 
         return sysAudit;
+    }
+
+    public static void copyOperateInfo(SysAudit sysAudit, Object pojo) {
+        ReflectUtil.setFieldValue(pojo, "operator", sysAudit.getSubmitter());
+        ReflectUtil.setFieldValue(pojo, "operateTime", sysAudit.getSubmitTime());
+        ReflectUtil.setFieldValue(pojo, "operateIp", sysAudit.getSubmitterIp());
     }
 }
