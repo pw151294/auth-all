@@ -26,6 +26,4 @@ public interface IDeptService {
     RestResponse submitUpdateDept(SysDeptDto sysDeptDto);
 
     RestResponse submitDeleteDept(Integer deptId);
-
-    void updateAll(List<SysDept> sysDepts);
 }

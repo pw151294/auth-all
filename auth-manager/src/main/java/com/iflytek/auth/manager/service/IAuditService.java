@@ -17,4 +17,6 @@ public interface IAuditService {
     Boolean hasSameRoleName(String roleName);
 
     Boolean hasSameUserInfo(String username, String mail, String telephone);
+
+    boolean hasSameNameOrSeq(String deptName, Integer seq);
 }

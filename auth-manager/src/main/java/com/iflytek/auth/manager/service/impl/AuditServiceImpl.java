@@ -8,6 +8,7 @@ import com.iflytek.auth.common.common.utils.PoCommonUtils;
 import com.iflytek.auth.common.dao.SysAuditMapper;
 import com.iflytek.auth.common.dto.SysAuditDto;
 import com.iflytek.auth.common.pojo.SysAudit;
+import com.iflytek.auth.common.pojo.SysDept;
 import com.iflytek.auth.common.pojo.SysRole;
 import com.iflytek.auth.common.pojo.SysUser;
 import com.iflytek.auth.manager.common.task.AuditHandler;
@@ -114,6 +115,26 @@ public class AuditServiceImpl extends ServiceImpl<SysAuditMapper, SysAudit> impl
             return StringUtils.equals(sysUser.getUsername(), username)
                     || StringUtils.equals(sysUser.getMail(), mail)
                     || StringUtils.equals(sysUser.getTelephone(), telephone);
+        });
+    }
+
+    @Override
+    public boolean hasSameNameOrSeq(String deptName, Integer seq) {
+        List<SysAudit> sysAudits = this.lambdaQuery()
+                .eq(SysAudit::getTargetType, TargetType.DEPT.getType())
+                .eq(SysAudit::getOperationType, OperationType.ADD.getType())
+                .eq(SysAudit::getStatus, 0)
+                .and(wrapper ->
+                        wrapper.like(SysAudit::getNewValue, deptName)
+                                .or().like(SysAudit::getNewValue, seq))
+                .list();
+        if (CollectionUtils.isEmpty(sysAudits)) {
+            return false;
+        }
+        return sysAudits.stream().anyMatch(sysAudit -> {
+            SysDept sysDept = JSON.parseObject(sysAudit.getNewValue(), SysDept.class);
+            return StringUtils.equals(sysDept.getName(), deptName)
+                    || seq.equals(sysDept.getSeq());
         });
     }
 }

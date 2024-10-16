@@ -1,10 +1,10 @@
 package com.iflytek.auth.manager.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Preconditions;
 import com.iflytek.auth.common.common.enums.AuthErrorCodeEnum;
 import com.iflytek.auth.common.common.enums.OperationType;
+import com.iflytek.auth.common.common.enums.TargetType;
 import com.iflytek.auth.common.common.utils.PoCommonUtils;
 import com.iflytek.auth.common.common.utils.TreeUtils;
 import com.iflytek.auth.common.dao.SysDeptMapper;
@@ -13,8 +13,8 @@ import com.iflytek.auth.common.pojo.SysAudit;
 import com.iflytek.auth.common.pojo.SysDept;
 import com.iflytek.auth.common.pojo.SysLog;
 import com.iflytek.auth.common.vo.SysDeptVo;
-import com.iflytek.auth.common.common.enums.TargetType;
 import com.iflytek.auth.manager.common.task.SysTask;
+import com.iflytek.auth.manager.service.IAuditService;
 import com.iflytek.auth.manager.service.IDeptService;
 import com.iflytek.itsc.web.exception.BaseBizException;
 import com.iflytek.itsc.web.response.RestResponse;
@@ -34,10 +34,13 @@ import java.util.stream.Collectors;
  * weipan4@iflytek.com Exp $
  */
 @Service
-public class DeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> implements IDeptService {
+public class DeptServiceImpl implements IDeptService {
 
     @Autowired
     private SysDeptMapper deptMapper;
+
+    @Autowired
+    private IAuditService auditService;
 
     @Autowired
     @Qualifier(value = "auditTask")
@@ -117,6 +120,10 @@ public class DeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impleme
         if (deptMapper.findByNameAndSeq(sysDeptDto) > 0) {
             throw new BaseBizException(AuthErrorCodeEnum.DEPT_DUPLICATE_NAME_OR_SEQ);
         }
+        //校验待审核的新增计划里 是否有同名或同序的部门
+        if (auditService.hasSameNameOrSeq(sysDeptDto.getName(), sysDeptDto.getSeq())) {
+            return RestResponse.buildError("待审核的新增计划里存在同名或同序的部门！");
+        }
         SysDept sysDept = new SysDept();
         transferProperties(sysDept, sysDeptDto);
         String newValue = JSON.toJSONString(sysDept);
@@ -132,6 +139,12 @@ public class DeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impleme
         //查询对应的部门是否存在
         Integer deptId = sysDeptDto.getId();
         Preconditions.checkNotNull(sysDeptDto.getId(), "被更新部门ID不能为空");
+        //校验该部门是否已经有待审核的修改或者删除计划
+        if (auditService.hasAudit(sysDeptDto.getId(), TargetType.DEPT.getType(), OperationType.UPDATE.getType())
+                || auditService.hasAudit(sysDeptDto.getId(), TargetType.DEPT.getType(), OperationType.DELETE.getType())) {
+            return RestResponse.buildError("存在待审核的修改删除该部门的计划！");
+        }
+
         SysDept sysDept = deptMapper.selectById(deptId);
         if (sysDept == null) {
             return RestResponse.buildError(String.format("待更新部门不存在，id:%s", deptId));
@@ -153,6 +166,11 @@ public class DeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impleme
     @Override
     public RestResponse submitDeleteDept(Integer deptId) {
         Preconditions.checkNotNull(deptId, "被删除部门的ID不能为空");
+        //校验该部门是否已经有待审核的修改或者删除计划
+        if (auditService.hasAudit(deptId, TargetType.DEPT.getType(), OperationType.UPDATE.getType())
+                || auditService.hasAudit(deptId, TargetType.DEPT.getType(), OperationType.DELETE.getType())) {
+            return RestResponse.buildError("存在待审核的修改删除该部门的计划！");
+        }
         //校验部门下是否有成员或者子部门
         if (deptMapper.countUsersByDeptId(deptId) > 0) {
             return RestResponse.buildError("该部门下还有成员存在，不能删除！");
@@ -167,19 +185,13 @@ public class DeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impleme
         return RestResponse.buildSuccess("删除部门计划提交成功！");
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateAll(List<SysDept> sysDepts) {
-        this.saveOrUpdateBatch(sysDepts);
-    }
-
 
     private void transferProperties(SysDept sysDept, SysDeptDto sysDeptDto) {
         sysDept.setName(sysDeptDto.getName());
         sysDept.setParentId(sysDeptDto.getParentId());
         sysDept.setSeq(sysDeptDto.getSeq());
         String parentLevel = deptMapper.findLevelById(sysDeptDto.getParentId());
-        sysDept.setLevel(PoCommonUtils.getLevel(parentLevel, sysDeptDto.getParentId()));
+        sysDept.setLevel(TreeUtils.getLevel(parentLevel, sysDeptDto.getParentId()));
         if (StringUtils.isNotBlank(sysDeptDto.getRemark())) {
             sysDept.setRemark(sysDeptDto.getRemark());
         }

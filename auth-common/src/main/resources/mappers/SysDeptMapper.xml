@@ -21,6 +21,54 @@
         level,seq,remark,
         operator,operate_time,operate_ip
     </sql>
+    <update id="updateAll">
+        UPDATE sys_dept
+        SET
+        name = CASE id
+        <foreach collection="sysDepts" item="dept" separator=" ">
+            WHEN #{dept.id} THEN #{dept.name}
+        </foreach>
+        END,
+        parent_id = CASE id
+        <foreach collection="sysDepts" item="dept" separator=" ">
+            WHEN #{dept.id} THEN #{dept.parentId}
+        </foreach>
+        END,
+        level = CASE id
+        <foreach collection="sysDepts" item="dept" separator=" ">
+            WHEN #{dept.id} THEN #{dept.level}
+        </foreach>
+        END,
+        seq = CASE id
+        <foreach collection="sysDepts" item="dept" separator=" ">
+            WHEN #{dept.id} THEN #{dept.seq}
+        </foreach>
+        END,
+        remark = CASE id
+        <foreach collection="sysDepts" item="dept" separator=" ">
+            WHEN #{dept.id} THEN #{dept.remark}
+        </foreach>
+        END,
+        operator = CASE id
+        <foreach collection="sysDepts" item="dept" separator=" ">
+            WHEN #{dept.id} THEN #{dept.operator}
+        </foreach>
+        END,
+        operate_time = CASE id
+        <foreach collection="sysDepts" item="dept" separator=" ">
+            WHEN #{dept.id} THEN #{dept.operateTime}
+        </foreach>
+        END,
+        operate_ip = CASE id
+        <foreach collection="sysDepts" item="dept" separator=" ">
+            WHEN #{dept.id} THEN #{dept.operateIp}
+        </foreach>
+        END
+        WHERE id IN
+        <foreach collection="sysDepts" item="dept" open="(" separator="," close=")">
+            #{dept.id}
+        </foreach>
+    </update>
     <select id="findByNameAndSeq" resultType="java.lang.Integer">
         select count(*)
         from sys_dept

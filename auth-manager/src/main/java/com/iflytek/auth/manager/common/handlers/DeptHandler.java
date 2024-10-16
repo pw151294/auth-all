@@ -3,10 +3,10 @@ package com.iflytek.auth.manager.common.handlers;
 import com.alibaba.fastjson.JSON;
 import com.iflytek.auth.common.common.enums.TargetType;
 import com.iflytek.auth.common.common.utils.PoCommonUtils;
+import com.iflytek.auth.common.common.utils.TreeUtils;
 import com.iflytek.auth.common.dao.SysDeptMapper;
 import com.iflytek.auth.common.pojo.SysAudit;
 import com.iflytek.auth.common.pojo.SysDept;
-import com.iflytek.auth.manager.service.IDeptService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,9 +23,6 @@ public class DeptHandler implements PojoHandler {
 
     @Autowired
     private SysDeptMapper sysDeptMapper;
-
-    @Autowired
-    private IDeptService deptService;
 
     @Override
     public Integer getTargetType() {
@@ -65,16 +62,16 @@ public class DeptHandler implements PojoHandler {
         SysDept newValue = JSON.parseObject(sysAudit.getNewValue(), SysDept.class);
         //查询该部门的所有子部门
         List<SysDept> sysDepts = sysDeptMapper.findAll();
-        List<SysDept> childs = PoCommonUtils.findChilds(sysAudit.getTargetId(), sysDepts);
+        List<SysDept> childs = TreeUtils.findChilds(sysAudit.getTargetId(), sysDepts);
         //更新所有子部门的level
-        PoCommonUtils.changeChildLevel(childs, oldValue.getLevel(), newValue.getLevel());
+        TreeUtils.changeChildLevel(childs, oldValue.getLevel(), newValue.getLevel());
 
         //更新部门信息和子部门信息
         sysDeptMapper.updateById(newValue);
         log.info("update dept success!");
 
         childs.forEach(child -> PoCommonUtils.copyOperateInfo(sysAudit, child));
-        deptService.updateAll(childs);
+        sysDeptMapper.updateAll(sysDepts);
         log.info("update level of child dept success!");
     }
 

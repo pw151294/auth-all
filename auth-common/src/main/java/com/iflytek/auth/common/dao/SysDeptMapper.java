@@ -46,4 +46,6 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     List<SysDept> findAll();
 
     String findLevelById(@Param("deptId") Integer deptId);
+
+    void updateAll(@Param("sysDepts") List<SysDept> sysDepts);
 }
