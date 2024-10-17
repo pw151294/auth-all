@@ -17,6 +17,7 @@ import com.iflytek.auth.common.pojo.SysAudit;
 import com.iflytek.auth.common.pojo.SysLog;
 import com.iflytek.auth.common.pojo.SysUser;
 import com.iflytek.auth.common.vo.SysUserVo;
+import com.iflytek.auth.manager.annotations.OpLogger;
 import com.iflytek.auth.manager.common.task.SysTask;
 import com.iflytek.auth.manager.service.IAuditService;
 import com.iflytek.auth.manager.service.IUserService;
@@ -56,6 +57,7 @@ public class UserServiceImpl implements IUserService {
     private SysTask auditTask;
 
     @Override
+    @OpLogger(opType = 0)
     public RestResponse<PageInfo<SysUserVo>> pageUsers(SysUserDto sysUserDto) {
         Preconditions.checkNotNull(sysUserDto.getDeptId(), "用户所在部门ID不能为空");
         PageHelper.startPage(sysUserDto.getPageNum(), sysUserDto.getPageSize());
@@ -143,7 +145,7 @@ public class UserServiceImpl implements IUserService {
         if (userMapper.countByKeyWord(sysUserDto) > 0) {
             return RestResponse.buildError("用户名、邮箱或者手机号不唯一");
         }
-        if (auditService.hasSameUserInfo(sysUserDto.getUsername(),sysUserDto.getMail(),sysUserDto.getTelephone())) {
+        if (auditService.hasSameUserInfo(sysUserDto.getUsername(), sysUserDto.getMail(), sysUserDto.getTelephone())) {
             return RestResponse.buildError("在待审核的新增用户计划里，用户名、邮箱或者手机号已经被占用");
         }
 
@@ -165,7 +167,7 @@ public class UserServiceImpl implements IUserService {
         Validator.validateUserUpdate(sysUserDto);
         //校验是否有对该用户的修改或者删除计划待审核
         if (auditService.hasAudit(sysUserDto.getId(), TargetType.USER.getType(), OperationType.UPDATE.getType())
-                || auditService.hasAudit(sysUserDto.getId(),TargetType.USER.getType(),OperationType.DELETE.getType())) {
+                || auditService.hasAudit(sysUserDto.getId(), TargetType.USER.getType(), OperationType.DELETE.getType())) {
             return RestResponse.buildError("存在对该用户的更新或删除计划待审核");
         }
         SysUser sysUser = userMapper.selectById(sysUserDto.getId());
@@ -192,7 +194,7 @@ public class UserServiceImpl implements IUserService {
         Preconditions.checkNotNull(userId, "被删除的用户ID不能为空");
         ///校验是否有对该用户的修改或者删除计划待审核
         if (auditService.hasAudit(userId, TargetType.USER.getType(), OperationType.UPDATE.getType())
-                || auditService.hasAudit(userId,TargetType.USER.getType(),OperationType.DELETE.getType())) {
+                || auditService.hasAudit(userId, TargetType.USER.getType(), OperationType.DELETE.getType())) {
             return RestResponse.buildError("存在对该用户的更新或删除计划待审核");
         }
         //创建审核记录/

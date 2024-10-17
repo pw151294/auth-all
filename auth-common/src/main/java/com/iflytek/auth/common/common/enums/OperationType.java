@@ -9,7 +9,7 @@ import lombok.Getter;
  */
 @Getter
 public enum OperationType {
-
+    QUERY(0, "查询"),
     ADD(1, "新增"),
     UPDATE(2, "修改"),
     DELETE(3, "删除");
