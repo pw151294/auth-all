@@ -42,6 +42,21 @@ public class AclController {
         return aclService.deleteAcl(aclId);
     }
 
+    @PostMapping("/submit/add")
+    public RestResponse submitAddAcl(@RequestBody SysAclDto sysAclDto) {
+        return aclService.submitAddAcl(sysAclDto);
+    }
+
+    @PostMapping("/submit/update")
+    public RestResponse submitUpdateAcl(@RequestBody SysAclDto sysAclDto) {
+        return aclService.submitUpdateAcl(sysAclDto);
+    }
+
+    @PostMapping("/submit/delete/{aclId}")
+    public RestResponse submitDeleteAcl(@PathVariable Integer aclId) {
+        return aclService.submitDeleteAcl(aclId);
+    }
+
     @PostMapping("/relation/users/{aclId}")
     public RestResponse<List<SysUserVo>> relationusers(@PathVariable Integer aclId) {
         return aclService.relationUsers(aclId);

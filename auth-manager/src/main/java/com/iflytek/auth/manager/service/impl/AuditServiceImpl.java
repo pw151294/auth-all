@@ -1,7 +1,9 @@
 package com.iflytek.auth.manager.service.impl;
 
+import cn.hutool.core.util.ReflectUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.iflytek.auth.common.common.enums.OperationType;
 import com.iflytek.auth.common.common.enums.TargetType;
 import com.iflytek.auth.common.common.utils.PoCommonUtils;
@@ -152,6 +154,46 @@ public class AuditServiceImpl extends ServiceImpl<SysAuditMapper, SysAudit> impl
             SysAclModule sysAclModule = JSON.parseObject(sysAudit.getNewValue(), SysAclModule.class);
             return StringUtils.equals(sysAclModule.getName(), aclModuleName)
                     || seq.equals(sysAclModule.getSeq());
+        });
+    }
+
+    /**
+     * 校验在待审核的新增实体计划里 是否存在重复的指定字段
+     * @param clazz 实体对象对应的Class类
+     * @param targetType 实体对象对应的枚举
+     * @param fieldKvMap key需要校验的字段名称 value在当前的新增计划参数中该字段的值
+     * @return
+     * @param <T>
+     */
+    @Override
+    public <T> boolean hasSameFieldValue(Class<T> clazz, Integer targetType, Map<String, String> fieldKvMap) {
+        List<String> fieldNames = Lists.newArrayList(fieldKvMap.keySet());
+        if (CollectionUtils.isEmpty(fieldNames)) {
+            return false;
+        }
+        //查询出在待审核的新增计划里 newValue能模糊匹配上需要校验的参数值的审核记录
+        //只有这些记录才有可能会出现重复参数值
+        List<SysAudit> sysAudits = this.lambdaQuery()
+                .eq(SysAudit::getStatus, 0)
+                .eq(SysAudit::getOperationType, OperationType.ADD.getType())
+                .eq(SysAudit::getTargetType, targetType)
+                .and(wrapper -> {
+                    wrapper.like(SysAudit::getNewValue, fieldKvMap.get(fieldNames.get(0)));
+                    fieldNames.subList(1, fieldNames.size()).forEach(fieldName ->
+                            wrapper.or().like(SysAudit::getNewValue, fieldKvMap.get(fieldName)));
+                }).list();
+
+        //对字段列表里的每个字段进行逐个校验
+        return sysAudits.stream().anyMatch(sysAudit -> {
+            T pojo = JSON.parseObject(sysAudit.getNewValue(), clazz);
+            for (String fieldName : fieldNames) {
+                String submittedValue = String.valueOf(ReflectUtil.getFieldValue(pojo, fieldName));
+                String currentValue = String.valueOf(fieldKvMap.get(fieldName));
+                if (StringUtils.equals(submittedValue, currentValue)) {
+                    return true;
+                }
+            }
+            return false;
         });
     }
 }

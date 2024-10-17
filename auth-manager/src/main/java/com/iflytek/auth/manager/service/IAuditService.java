@@ -4,6 +4,8 @@ package com.iflytek.auth.manager.service;
 import com.iflytek.auth.common.dto.SysAuditDto;
 import com.iflytek.itsc.web.response.RestResponse;
 
+import java.util.Map;
+
 /**
  * @author weipan4
  * weipan4@iflytek.com Exp $
@@ -21,4 +23,6 @@ public interface IAuditService {
     boolean hasSameNameOrSeqDept(String deptName, Integer seq);
 
     boolean hasSameNameOrSeqAclModule(String aclModuleName, Integer seq);
+
+    <T> boolean hasSameFieldValue(Class<T> clazz, Integer targetType, Map<String, String> fieldKvMap);
 }

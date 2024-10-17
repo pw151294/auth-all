@@ -22,6 +22,12 @@ public interface IAclService {
 
     RestResponse deleteAcl(Integer aclId);
 
+    RestResponse submitAddAcl(SysAclDto sysAclDto);
+
+    RestResponse submitUpdateAcl(SysAclDto sysAclDto);
+
+    RestResponse submitDeleteAcl(Integer aclId);
+
     /**
      * 查询权限点对应的所有用户
      * @param aclId
