@@ -23,19 +23,72 @@
         remark,operator,operate_time,
         operate_ip
     </sql>
+    <update id="updateAll">
+        UPDATE sys_acl_module
+        SET
+        name = CASE id
+        <foreach collection="sysAclModules" item="module" separator=" ">
+            WHEN #{module.id} THEN #{module.name}
+        </foreach>
+        END,
+        parent_id = CASE id
+        <foreach collection="sysAclModules" item="module" separator=" ">
+            WHEN #{module.id} THEN #{module.parentId}
+        </foreach>
+        END,
+        level = CASE id
+        <foreach collection="sysAclModules" item="module" separator=" ">
+            WHEN #{module.id} THEN #{module.level}
+        </foreach>
+        END,
+        seq = CASE id
+        <foreach collection="sysAclModules" item="module" separator=" ">
+            WHEN #{module.id} THEN #{module.seq}
+        </foreach>
+        END,
+        status = CASE id
+        <foreach collection="sysAclModules" item="module" separator=" ">
+            WHEN #{module.id} THEN #{module.status}
+        </foreach>
+        END,
+        remark = CASE id
+        <foreach collection="sysAclModules" item="module" separator=" ">
+            WHEN #{module.id} THEN #{module.remark}
+        </foreach>
+        END,
+        operator = CASE id
+        <foreach collection="sysAclModules" item="module" separator=" ">
+            WHEN #{module.id} THEN #{module.operator}
+        </foreach>
+        END,
+        operate_time = CASE id
+        <foreach collection="sysAclModules" item="module" separator=" ">
+            WHEN #{module.id} THEN #{module.operateTime}
+        </foreach>
+        END,
+        operate_ip = CASE id
+        <foreach collection="sysAclModules" item="module" separator=" ">
+            WHEN #{module.id} THEN #{module.operateIp}
+        </foreach>
+        END
+        WHERE id IN
+        <foreach collection="sysAclModules" item="module" open="(" separator="," close=")">
+            #{module.id}
+        </foreach>
+    </update>
     <select id="findAll" resultType="com.iflytek.auth.common.pojo.SysAclModule">
         select *
         from sys_acl_module
         where status = 1;
     </select>
     <select id="countByNameAndSeq" resultType="java.lang.Integer">
-        select *
+        select count(*)
         from sys_acl_module
         where (id = #{sysAclModuleDto.parentId} and name = #{sysAclModuleDto.name})
            or (id = #{sysAclModuleDto.parentId} and seq = #{sysAclModuleDto.seq})
     </select>
     <select id="findLevelById" resultType="java.lang.String">
-        select *
+        select level
         from sys_acl_module
         where id = #{id};
     </select>

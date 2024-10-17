@@ -7,10 +7,7 @@ import com.iflytek.auth.common.common.enums.TargetType;
 import com.iflytek.auth.common.common.utils.PoCommonUtils;
 import com.iflytek.auth.common.dao.SysAuditMapper;
 import com.iflytek.auth.common.dto.SysAuditDto;
-import com.iflytek.auth.common.pojo.SysAudit;
-import com.iflytek.auth.common.pojo.SysDept;
-import com.iflytek.auth.common.pojo.SysRole;
-import com.iflytek.auth.common.pojo.SysUser;
+import com.iflytek.auth.common.pojo.*;
 import com.iflytek.auth.manager.common.task.AuditHandler;
 import com.iflytek.auth.manager.service.IAuditService;
 import com.iflytek.itsc.web.response.RestResponse;
@@ -119,7 +116,7 @@ public class AuditServiceImpl extends ServiceImpl<SysAuditMapper, SysAudit> impl
     }
 
     @Override
-    public boolean hasSameNameOrSeq(String deptName, Integer seq) {
+    public boolean hasSameNameOrSeqDept(String deptName, Integer seq) {
         List<SysAudit> sysAudits = this.lambdaQuery()
                 .eq(SysAudit::getTargetType, TargetType.DEPT.getType())
                 .eq(SysAudit::getOperationType, OperationType.ADD.getType())
@@ -135,6 +132,26 @@ public class AuditServiceImpl extends ServiceImpl<SysAuditMapper, SysAudit> impl
             SysDept sysDept = JSON.parseObject(sysAudit.getNewValue(), SysDept.class);
             return StringUtils.equals(sysDept.getName(), deptName)
                     || seq.equals(sysDept.getSeq());
+        });
+    }
+
+    @Override
+    public boolean hasSameNameOrSeqAclModule(String aclModuleName, Integer seq) {
+        List<SysAudit> sysAudits = this.lambdaQuery()
+                .eq(SysAudit::getTargetType, TargetType.ACL_MODULE.getType())
+                .eq(SysAudit::getOperationType, OperationType.ADD.getType())
+                .eq(SysAudit::getStatus, 0)
+                .and(wrapper ->
+                        wrapper.like(SysAudit::getNewValue, aclModuleName)
+                                .or().like(SysAudit::getNewValue, seq))
+                .list();
+        if (CollectionUtils.isEmpty(sysAudits)) {
+            return false;
+        }
+        return sysAudits.stream().anyMatch(sysAudit -> {
+            SysAclModule sysAclModule = JSON.parseObject(sysAudit.getNewValue(), SysAclModule.class);
+            return StringUtils.equals(sysAclModule.getName(), aclModuleName)
+                    || seq.equals(sysAclModule.getSeq());
         });
     }
 }

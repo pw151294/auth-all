@@ -18,5 +18,7 @@ public interface IAuditService {
 
     Boolean hasSameUserInfo(String username, String mail, String telephone);
 
-    boolean hasSameNameOrSeq(String deptName, Integer seq);
+    boolean hasSameNameOrSeqDept(String deptName, Integer seq);
+
+    boolean hasSameNameOrSeqAclModule(String aclModuleName, Integer seq);
 }

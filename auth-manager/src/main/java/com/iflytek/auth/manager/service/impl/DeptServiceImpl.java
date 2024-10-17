@@ -121,7 +121,7 @@ public class DeptServiceImpl implements IDeptService {
             throw new BaseBizException(AuthErrorCodeEnum.DEPT_DUPLICATE_NAME_OR_SEQ);
         }
         //校验待审核的新增计划里 是否有同名或同序的部门
-        if (auditService.hasSameNameOrSeq(sysDeptDto.getName(), sysDeptDto.getSeq())) {
+        if (auditService.hasSameNameOrSeqDept(sysDeptDto.getName(), sysDeptDto.getSeq())) {
             return RestResponse.buildError("待审核的新增计划里存在同名或同序的部门！");
         }
         SysDept sysDept = new SysDept();

@@ -39,4 +39,19 @@ public class AclModuleController {
     public RestResponse deleteAclModule(@PathVariable Integer aclModuleId) {
         return aclModuleService.deleteAclModule(aclModuleId);
     }
+
+    @PostMapping("/submit/add")
+    public RestResponse submitAddAclModule(@RequestBody SysAclModuleDto sysAclModuleDto) {
+        return aclModuleService.submitAddAclModule(sysAclModuleDto);
+    }
+
+    @PostMapping("/submit/update")
+    public RestResponse submitUpdateAclModule(@RequestBody SysAclModuleDto sysAclModuleDto) {
+        return aclModuleService.submitUpdateAclModule(sysAclModuleDto);
+    }
+
+    @PostMapping("/submit/delete/{aclModuleId}")
+    public RestResponse submitDeleteAclModule(@PathVariable Integer aclModuleId) {
+        return aclModuleService.submitDeleteAclModule(aclModuleId);
+    }
 }

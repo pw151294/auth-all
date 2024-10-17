@@ -19,6 +19,8 @@ public interface SysAclModuleMapper extends BaseMapper<SysAclModule> {
 
     List<SysAclModule> findAll();
 
+    void updateAll(@Param("sysAclModules") List<SysAclModule> sysAclModules);
+
     String findLevelById(@Param("id") Integer id);
 
     /**

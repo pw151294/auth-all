@@ -19,4 +19,10 @@ public interface IAclModuleService {
     RestResponse updateAclModule(SysAclModuleDto sysAclModuleDto);
 
     RestResponse deleteAclModule(Integer aclModuleId);
+
+    RestResponse submitAddAclModule(SysAclModuleDto sysAclModuleDto);
+
+    RestResponse submitUpdateAclModule(SysAclModuleDto sysAclModuleDto);
+
+    RestResponse submitDeleteAclModule(Integer aclModuleId);
 }
