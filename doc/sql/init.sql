@@ -406,3 +406,23 @@ create table sys_audit
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 28
   DEFAULT CHARSET = utf8mb4;
+
+-- ----------------------------
+--  Table structure for `sys_op_log`
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_op_log`;
+CREATE TABLE `sys_op_log`
+(
+    `id`           int(11)     NOT NULL AUTO_INCREMENT,
+    `type`         int(11)     NOT NULL COMMENT '操作类型，0：查询，1：新增，2：修改，3：删除',
+    `interface_name`    text        NOT NULL COMMENT '接口名称',
+    `param`        text        NOT NULL COMMENT '接口参数',
+    `return_value`       text        COMMENT '接口返回值',
+    `exception`    text        COMMENT '接口抛出异常',
+    `operator`     varchar(20) NOT NULL DEFAULT '' COMMENT '操作者',
+    `operate_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后一次更新的时间',
+    `operate_ip`   varchar(20) NOT NULL DEFAULT '' COMMENT '最后一次更新者的ip地址',
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 35
+  DEFAULT CHARSET = utf8mb4;
