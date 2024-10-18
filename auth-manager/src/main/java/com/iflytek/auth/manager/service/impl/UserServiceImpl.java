@@ -18,7 +18,7 @@ import com.iflytek.auth.common.pojo.SysLog;
 import com.iflytek.auth.common.pojo.SysUser;
 import com.iflytek.auth.common.vo.SysUserVo;
 import com.iflytek.auth.manager.annotations.OpLogger;
-import com.iflytek.auth.manager.common.task.SysTask;
+import com.iflytek.auth.manager.task.SysTask;
 import com.iflytek.auth.manager.service.IAuditService;
 import com.iflytek.auth.manager.service.IUserService;
 import com.iflytek.itsc.web.exception.BaseBizException;

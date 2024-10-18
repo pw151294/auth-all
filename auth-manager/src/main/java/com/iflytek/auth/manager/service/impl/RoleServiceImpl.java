@@ -15,7 +15,7 @@ import com.iflytek.auth.common.dto.SysRoleUserDto;
 import com.iflytek.auth.common.pojo.*;
 import com.iflytek.auth.common.vo.SysRoleAclModuleVo;
 import com.iflytek.auth.common.vo.SysRoleAclVo;
-import com.iflytek.auth.manager.common.task.SysTask;
+import com.iflytek.auth.manager.task.SysTask;
 import com.iflytek.auth.manager.service.IAuditService;
 import com.iflytek.auth.manager.service.ILogService;
 import com.iflytek.auth.manager.service.IRoleService;

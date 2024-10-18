@@ -1,9 +1,9 @@
-package com.iflytek.auth.manager.common.task;
+package com.iflytek.auth.manager.task;
 
 import com.google.common.collect.Maps;
 import com.iflytek.auth.common.common.enums.TargetType;
 import com.iflytek.auth.common.pojo.SysAudit;
-import com.iflytek.auth.manager.common.handlers.PojoHandler;
+import com.iflytek.auth.manager.handler.PojoHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;

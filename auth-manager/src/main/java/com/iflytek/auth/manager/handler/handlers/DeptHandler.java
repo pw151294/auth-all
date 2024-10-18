@@ -1,4 +1,4 @@
-package com.iflytek.auth.manager.common.handlers;
+package com.iflytek.auth.manager.handler.handlers;
 
 import com.alibaba.fastjson.JSON;
 import com.iflytek.auth.common.common.enums.TargetType;
@@ -7,6 +7,7 @@ import com.iflytek.auth.common.common.utils.TreeUtils;
 import com.iflytek.auth.common.dao.SysDeptMapper;
 import com.iflytek.auth.common.pojo.SysAudit;
 import com.iflytek.auth.common.pojo.SysDept;
+import com.iflytek.auth.manager.handler.PojoHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

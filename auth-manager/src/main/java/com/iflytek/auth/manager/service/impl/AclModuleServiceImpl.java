@@ -13,7 +13,7 @@ import com.iflytek.auth.common.pojo.SysAclModule;
 import com.iflytek.auth.common.pojo.SysAudit;
 import com.iflytek.auth.common.pojo.SysLog;
 import com.iflytek.auth.common.vo.SysAclModuleVo;
-import com.iflytek.auth.manager.common.task.SysTask;
+import com.iflytek.auth.manager.task.SysTask;
 import com.iflytek.auth.manager.service.IAclModuleService;
 import com.iflytek.auth.manager.service.IAuditService;
 import com.iflytek.itsc.web.exception.BaseBizException;

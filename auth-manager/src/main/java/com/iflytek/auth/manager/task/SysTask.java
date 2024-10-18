@@ -1,4 +1,4 @@
-package com.iflytek.auth.manager.common.task;
+package com.iflytek.auth.manager.task;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;

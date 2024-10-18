@@ -1,4 +1,4 @@
-package com.iflytek.auth.manager.common.aspect;
+package com.iflytek.auth.manager.aspect;
 
 import com.alibaba.fastjson.JSON;
 import com.iflytek.auth.common.dao.SysOpLogMapper;

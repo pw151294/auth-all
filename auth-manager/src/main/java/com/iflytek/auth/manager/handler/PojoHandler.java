@@ -1,4 +1,4 @@
-package com.iflytek.auth.manager.common.handlers;
+package com.iflytek.auth.manager.handler;
 
 import com.iflytek.auth.common.pojo.SysAudit;
 

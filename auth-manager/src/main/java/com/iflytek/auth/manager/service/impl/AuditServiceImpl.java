@@ -10,7 +10,7 @@ import com.iflytek.auth.common.common.utils.PoCommonUtils;
 import com.iflytek.auth.common.dao.SysAuditMapper;
 import com.iflytek.auth.common.dto.SysAuditDto;
 import com.iflytek.auth.common.pojo.*;
-import com.iflytek.auth.manager.common.task.AuditHandler;
+import com.iflytek.auth.manager.task.AuditHandler;
 import com.iflytek.auth.manager.service.IAuditService;
 import com.iflytek.itsc.web.response.RestResponse;
 import lombok.extern.slf4j.Slf4j;

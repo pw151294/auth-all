@@ -1,4 +1,4 @@
-package com.iflytek.auth.manager.common.filters;
+package com.iflytek.auth.manager.filters;
 
 import com.iflytek.auth.common.pojo.SysOpLog;
 import com.iflytek.auth.common.pojo.SysUser;

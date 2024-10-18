@@ -5,9 +5,9 @@ import com.iflytek.auth.common.dao.SysAuditMapper;
 import com.iflytek.auth.common.dao.SysLogMapper;
 import com.iflytek.auth.common.pojo.SysAudit;
 import com.iflytek.auth.common.pojo.SysLog;
-import com.iflytek.auth.manager.common.handlers.PojoHandler;
-import com.iflytek.auth.manager.common.task.AuditHandler;
-import com.iflytek.auth.manager.common.task.SysTask;
+import com.iflytek.auth.manager.handler.PojoHandler;
+import com.iflytek.auth.manager.task.AuditHandler;
+import com.iflytek.auth.manager.task.SysTask;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

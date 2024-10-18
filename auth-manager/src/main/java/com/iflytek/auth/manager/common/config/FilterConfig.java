@@ -1,8 +1,8 @@
 package com.iflytek.auth.manager.common.config;
 
 import com.iflytek.auth.common.common.AuthConstant;
-import com.iflytek.auth.manager.common.filters.AuthFilter;
-import com.iflytek.auth.manager.common.filters.OpLogFilter;
+import com.iflytek.auth.manager.filters.AuthFilter;
+import com.iflytek.auth.manager.filters.OpLogFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

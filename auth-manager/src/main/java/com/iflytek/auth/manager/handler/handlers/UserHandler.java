@@ -1,10 +1,11 @@
-package com.iflytek.auth.manager.common.handlers;
+package com.iflytek.auth.manager.handler.handlers;
 
 import com.alibaba.fastjson.JSON;
 import com.iflytek.auth.common.common.enums.TargetType;
 import com.iflytek.auth.common.dao.SysUserMapper;
 import com.iflytek.auth.common.pojo.SysAudit;
 import com.iflytek.auth.common.pojo.SysUser;
+import com.iflytek.auth.manager.handler.PojoHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +17,7 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Component
-public class UserHandler implements PojoHandler{
+public class UserHandler implements PojoHandler {
 
     @Resource
     private SysUserMapper sysUserMapper;

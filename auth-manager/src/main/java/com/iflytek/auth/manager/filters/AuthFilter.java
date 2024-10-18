@@ -1,4 +1,4 @@
-package com.iflytek.auth.manager.common.filters;
+package com.iflytek.auth.manager.filters;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Splitter;
