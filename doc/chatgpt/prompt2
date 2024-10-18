@@ -1,0 +1,48 @@
+我现在想使用到cn.hutool.core.util.ReflectUtil这个类，请问我在Maven的pom文件里应该如何导入这个类所在的依赖
+
+<if test="paramVo.name != null and paramVo.name != ''">
+        and RFI.NAME like '%'||#{paramVo.name}||'%'
+    </if>
+    <if test="paramVo.expertType != null and paramVo.expertType != ''">
+        and RFI.EXPERT_TYPE = #{paramVo.expertType}
+    </if>
+    <if test="paramVo.reviewStageList != null and paramVo.reviewStageList.size()>0">
+        AND RFI.REVIEW_STAGE in
+        <foreach collection="paramVo.reviewStageList" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </if>
+    <if test="paramVo.reviewType != null and paramVo.reviewType != ''">
+        and RFI.REVIEW_TYPE = #{paramVo.reviewType}
+    </if>
+    <!--<if test="paramVo.businessType != null and paramVo.businessType != ''">
+        and RFI.BUSINESS_TYPE = #{paramVo.businessType}
+    </if>-->
+    <if test="paramVo.projectTypeParamList != null and paramVo.projectTypeParamList.size > 0">
+        and (
+        <foreach collection="paramVo.projectTypeParamList" item="item" index="index" open="(" close=")"
+                    separator=") OR (">
+            RFI.PLAN_TYPE = #{item.planCode}
+            <foreach collection="item.projectTypeNameList" item="name" index="index"
+                        open=" AND RFI.project_type_name IN (" close=")" separator=",">
+                #{name}
+            </foreach>
+        </foreach>
+        )
+    </if>
+    <if test="paramVo.status != null and paramVo.status != ''">
+        and RFI.STATUS = #{paramVo.status}
+    </if>
+    <if test="paramVo.idList != null and paramVo.idList.size()>0">
+        <foreach collection="paramVo.idList" item="id" separator="," open="and RFI.ID IN (" close=")">
+            #{id}
+        </foreach>
+    </if>
+    order by RFI.CREATED_TIME desc
+</select>
+```
+该示例的主要功能，是根据参数对象paramVo里的各个参数变量，进行条件查询，而且使用了if标签对参数进行了判空处理，使用了foreach标签来对请求参数中的列表字段进行了循环遍历。请发挥你的才能，帮我用xml语法实现你生成的sql
+```
+1.语法规则需要遵循提供的示例
+2.对于相同的查询参数，xml语句执行的查询结果和该sql执行的查询结果必须严格一致
+```

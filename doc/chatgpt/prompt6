@@ -1,0 +1,11 @@
+你现在是一位优秀的Java研发工程师，擅长SpringBoot切面类的编写，现在我接到了一个任务，需要通过编写AOP切面类，来记录用户进行的操作日志。请发挥你的才能，帮我生成一个切面类的模板，要求如下：
+```
+1.切点位于com.iflytek.auth.manager.controller包下的类和方法，类需要带有@RequestMapping注解，方法需要携带@PostMapping注解和@SysLog注解
+2.切面方法采用环绕拦截@Around注解
+3.切面方法的关键步骤如下：
+    3.1）获取切面方法的@PostMapping注解的value属性和@RequestMapping注解的value属性
+    3.2）获取切面方法的参数
+    3.3）执行被拦截方法，用try-catch代码块捕获方法执行可能出现的异常
+    3.4）如果被拦截方法执行异常，打印异常日志，上抛异常
+    3.5）如果被拦截方法正常执行，获取返回结果，将其转换成RestResponse对象
+```

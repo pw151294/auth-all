@@ -1,0 +1,65 @@
+   提示词：你现在是一位优秀的Java研发工程师，是消息队列方面的资深专家，尤其精通使用kafka消息队列来完成异步任务。我现在接到了一个任务，要求通过异步的方式，存储程序运行时产生的操作日志，操作日志的Java实体类结构如下：
+   ```
+   @Data
+   public class SysGrantLog implements Serializable {
+       @TableId(value = "id", type = IdType.AUTO)
+       private Integer id;
+
+       /**
+        * 授权对象id
+        */
+       @TableField(value = "target_id")
+       private Integer targetId;
+
+       /**
+        * 授权类型：角色
+        */
+       @TableField(value = "target_type")
+       private Integer targetType;
+
+       /**
+        * 被授权内容类型：用户、权限
+        */
+       @TableField(value = "grant_type")
+       private Integer grantType;
+
+       /**
+        * 被授权对象id列表
+        */
+       @TableField(value = "grant_ids")
+       private String grantIds;
+
+       /**
+        * 操作者
+        */
+       @TableField(value = "operator")
+       private String operator;
+
+       /**
+        * 最后一次更新的时间
+        */
+       @TableField(value = "operate_time")
+       private Date operateTime;
+
+       /**
+        * 最后一次更新者的ip地址
+        */
+       @TableField(value = "operate_ip")
+       private String operateIp;
+
+       private static final long serialVersionUID = 1L;
+   }
+   ```
+   我打算通过kafka消息队列来实现这个需求，我的主要实现思路如下：
+   ```
+   1.使用Springboot框架集成kafka消息队列
+   2.为kafka分配一个topic='SYS_GRANT_LOG'，用来向该topic对应的分区存储消息对象
+   3.kafka消息队列从2中分配的topic对应的分区下获取数据
+   ```
+   请发挥你的才能，结合问题背景，实体对象结构还有主要实现思路，帮我编码实现这个功能，要求：
+   ```
+   1.给出Springboot框架集成kafka消息队列需要引用的依赖，并给出pom文件的示例代码
+   2.给出Springboot框架集成kafka消息队列需要进行的配置，并给出application.properties文件或者application.yml文件的配置示例
+   3.给出在Springboot项目中注入kafkaTemplate类的代码示例，并给出详细的注释
+   4.编写在业务程序中调用kafka封装的接口向消息队列发送数据的示例代码，并给出详细注释
+   5.编写在消息队列中获取数据的过程，写出详细由消息体转换成SysGrantLog对象的代码，并给出注释

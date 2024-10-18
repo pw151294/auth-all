@@ -1,0 +1,132 @@
+你现在是一位优秀的Java研发工程师，精通mysql8和Mybatis-plus框架。现在，我有一个编写sql完成数据查询的任务，主要涉及以下几张表：
+```
+1.权限表
+CREATE TABLE `sys_acl` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '权限id',
+  `code` varchar(20) NOT NULL DEFAULT '' COMMENT '权限码',
+  `name` varchar(20) NOT NULL DEFAULT '' COMMENT '权限名称',
+  `acl_module_id` int(11) NOT NULL DEFAULT '0' COMMENT '权限所在的权限模块id',
+  `url` varchar(100) NOT NULL DEFAULT '' COMMENT '请求的url, 可以填正则表达式',
+  `type` int(11) NOT NULL DEFAULT '3' COMMENT '类型，1：菜单，2：按钮，3：其他',
+  `status` int(11) NOT NULL DEFAULT '1' COMMENT '状态，1：正常，0：冻结',
+  `seq` int(11) NOT NULL DEFAULT '0' COMMENT '权限在当前模块下的顺序，由小到大',
+  `remark` varchar(200) DEFAULT '' COMMENT '备注',
+  `operator` varchar(20) NOT NULL DEFAULT '' COMMENT '操作者',
+  `operate_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后一次更新时间',
+  `operate_ip` varchar(20) NOT NULL DEFAULT '' COMMENT '最后一个更新者的ip地址',
+  PRIMARY KEY (`id`)
+)
+2.角色表
+CREATE TABLE `sys_role` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '角色id',
+  `name` varchar(20) NOT NULL,
+  `type` int(11) NOT NULL DEFAULT '1' COMMENT '角色的类型，1：管理员角色，2：其他',
+  `status` int(11) NOT NULL DEFAULT '1' COMMENT '状态，1：可用，0：冻结',
+  `remark` varchar(200) DEFAULT '' COMMENT '备注',
+  `operator` varchar(20) NOT NULL DEFAULT '' COMMENT '操作者',
+  `operate_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后一次更新的时间',
+  `operate_ip` varchar(20) NOT NULL DEFAULT '' COMMENT '最后一次更新者的ip地址',
+  PRIMARY KEY (`id`)
+)
+3.用户表 
+CREATE TABLE `sys_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '用户id',
+  `username` varchar(20) NOT NULL DEFAULT '' COMMENT '用户名称',
+  `telephone` varchar(13) NOT NULL DEFAULT '' COMMENT '手机号',
+  `mail` varchar(20) NOT NULL DEFAULT '' COMMENT '邮箱',
+  `password` varchar(40) NOT NULL DEFAULT '' COMMENT '加密后的密码',
+  `dept_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户所在部门的id',
+  `status` int(11) NOT NULL DEFAULT '1' COMMENT '状态，1：正常，0：冻结状态，2：删除',
+  `remark` varchar(200) DEFAULT '' COMMENT '备注',
+  `operator` varchar(20) NOT NULL DEFAULT '' COMMENT '操作者',
+  `operate_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后一次更新时间',
+  `operate_ip` varchar(20) NOT NULL DEFAULT '' COMMENT '最后一次更新者的ip地址',
+  PRIMARY KEY (`id`)
+) 
+4.用户角色关联表 
+CREATE TABLE `sys_role_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `role_id` int(11) NOT NULL COMMENT '角色id',
+  `user_id` int(11) NOT NULL COMMENT '用户id',
+  `operator` varchar(20) NOT NULL DEFAULT '' COMMENT '操作者',
+  `operate_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后一次更新的时间',
+  `operate_ip` varchar(20) NOT NULL DEFAULT '' COMMENT '最后一次更新者的ip地址',
+  PRIMARY KEY (`id`)
+)
+5.角色权限关联表
+CREATE TABLE `sys_role_acl` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `role_id` int(11) NOT NULL COMMENT '角色id',
+  `acl_id` int(11) NOT NULL COMMENT '权限id',
+  `operator` varchar(20) NOT NULL DEFAULT '' COMMENT '操作者',
+  `operate_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后一次更新的时间',
+  `operate_ip` varchar(200) NOT NULL DEFAULT '' COMMENT '最后一次更新者的ip',
+  PRIMARY KEY (`id`)
+)
+6.部门表
+CREATE TABLE `sys_dept` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '部门id',
+  `name` varchar(20) NOT NULL DEFAULT '' COMMENT '部门名称',
+  `parent_id` int(11) NOT NULL DEFAULT '0' COMMENT '上级部门id',
+  `level` varchar(200) NOT NULL DEFAULT '' COMMENT '部门层级',
+  `seq` int(11) NOT NULL DEFAULT '0' COMMENT '部门在当前层级下的顺序，由小到大',
+  `remark` varchar(200) DEFAULT '' COMMENT '备注',
+  `operator` varchar(20) NOT NULL DEFAULT '' COMMENT '操作者',
+  `operate_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后一次操作时间',
+  `operate_ip` varchar(20) NOT NULL DEFAULT '' COMMENT '最后一次更新操作者的ip地址',
+  PRIMARY KEY (`id`)
+)
+7.权限表
+CREATE TABLE `sys_acl` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '权限id',
+  `code` varchar(20) NOT NULL DEFAULT '' COMMENT '权限码',
+  `name` varchar(20) NOT NULL DEFAULT '' COMMENT '权限名称',
+  `acl_module_id` int(11) NOT NULL DEFAULT '0' COMMENT '权限所在的权限模块id',
+  `url` varchar(100) NOT NULL DEFAULT '' COMMENT '请求的url, 可以填正则表达式',
+  `type` int(11) NOT NULL DEFAULT '3' COMMENT '类型，1：菜单，2：按钮，3：其他',
+  `status` int(11) NOT NULL DEFAULT '1' COMMENT '状态，1：正常，0：冻结',
+  `seq` int(11) NOT NULL DEFAULT '0' COMMENT '权限在当前模块下的顺序，由小到大',
+  `remark` varchar(200) DEFAULT '' COMMENT '备注',
+  `operator` varchar(20) NOT NULL DEFAULT '' COMMENT '操作者',
+  `operate_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后一次更新时间',
+  `operate_ip` varchar(20) NOT NULL DEFAULT '' COMMENT '最后一个更新者的ip地址',
+  PRIMARY KEY (`id`)
+)
+8.权限模块表
+CREATE TABLE `sys_acl_module` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '权限模块id',
+  `name` varchar(20) NOT NULL DEFAULT '' COMMENT '权限模块名称',
+  `parent_id` int(11) NOT NULL DEFAULT '0' COMMENT '上级权限模块id',
+  `level` varchar(200) NOT NULL DEFAULT '' COMMENT '权限模块层级',
+  `seq` int(11) NOT NULL DEFAULT '0' COMMENT '权限模块在当前层级下的顺序，由小到大',
+  `status` int(11) NOT NULL DEFAULT '1' COMMENT '状态，1：正常，0：冻结',
+  `remark` varchar(200) DEFAULT '' COMMENT '备注',
+  `operator` varchar(20) NOT NULL DEFAULT '' COMMENT '操作者',
+  `operate_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后一次操作时间',
+  `operate_ip` varchar(20) NOT NULL DEFAULT '' COMMENT '最后一次更新操作者的ip地址',
+  PRIMARY KEY (`id`)
+)
+```
+上述几张表之间存在关联，可以通过如下sql实现联表查询：
+```
+1.sys_user u left join sys_role_user ru on ru.user_id = u.id 
+2.sys_role r left join sys_role_user ru on ru.role_id = r.id 
+3.sys_acl a left join sys_role_acl ra on ra.acl_id = a.id 
+4.sys_role r left join sys_role_acl ra on ra.role_id = r.id
+5.sys_user u left join sys_dept d on u.dept_id = d.id 
+6.sys_acl a left join sys_acl_module am on a.acl_module_id = am.id
+```
+现在我需要根据参数deptId和keyword实现用户信息的分页查询，查询逻辑如下：
+```
+1.查询部门ID参数deptId对应的部门
+2.查询1中部门所对应的所有用户
+3.如果keyword非空，则需要进行条件搜索，下述条件至少需要满足一条：
+    3.1）sys_dept表的name和keyword模糊匹配
+    3.2）sys_user表的username和keyword模糊匹配
+    3.3）sys_user表的email和keyword模糊匹配
+    3.4）sys_user表的telephone和keyword模糊匹配
+4.返回：
+    4.1）sys_user表的username email telephone status字段
+    4.2）sys_dept表的name字段
+```
+请根据上述表信息和查询逻辑，帮我生成一段sql，实现根据deptId和keyword实现用户信息分页查询的功能
