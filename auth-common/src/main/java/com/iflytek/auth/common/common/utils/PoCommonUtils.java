@@ -150,4 +150,15 @@ public class PoCommonUtils {
         ReflectUtil.setFieldValue(log, "operateIp", sysLog.getOperateIp());
     }
 
+    public static void copyOpLogProperties(SysAudit sysAudit, SysOpLog sysOpLog) {
+        copyOperateInfo(sysAudit, sysOpLog);
+        sysOpLog.setType(sysAudit.getOperationType());
+        sysOpLog.setParam(sysAudit.getNewValue());
+    }
+
+    public static void copyGrantLogProperties(SysAudit sysAudit, SysGrantLog sysGrantLog) {
+        copyOperateInfo(sysAudit, sysGrantLog);
+        sysGrantLog.setTargetId(sysAudit.getTargetId());
+        sysGrantLog.setGrantIds(sysAudit.getNewValue());
+    }
 }
