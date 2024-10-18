@@ -1,6 +1,6 @@
 package com.iflytek.auth.manager.filters;
 
-import com.iflytek.auth.common.pojo.SysOpLog;
+import com.iflytek.auth.common.pojo.SysLog;
 import com.iflytek.auth.common.pojo.SysUser;
 import com.iflytek.auth.manager.common.utils.LogHolder;
 import lombok.extern.slf4j.Slf4j;
@@ -30,14 +30,14 @@ public class OpLogFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpSession session = request.getSession(true);
         SysUser sysUser = (SysUser) session.getAttribute("USER");
-        SysOpLog sysOpLog = new SysOpLog();
+        SysLog sysLog = new SysLog();
         if (sysUser != null) {
-            sysOpLog.setOperator(sysUser.getUsername());
+            sysLog.setOperator(sysUser.getUsername());
         } else {
-            sysOpLog.setOperator("UNKNOWN");
+            sysLog.setOperator("UNKNOWN");
         }
-        sysOpLog.setOperateIp(request.getRemoteAddr());
-        LogHolder.setLog(sysOpLog);
+        sysLog.setOperateIp(request.getRemoteAddr());
+        LogHolder.setLog(sysLog);
         chain.doFilter(servletRequest, servletResponse);
     }
 }

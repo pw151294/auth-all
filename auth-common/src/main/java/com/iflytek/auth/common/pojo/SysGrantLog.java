@@ -63,6 +63,18 @@ public class SysGrantLog implements Serializable {
     @TableField(value = "operate_ip")
     private String operateIp;
 
+    /**
+     * 授权结果 0失败 1成功
+     */
+    @TableField(value = "grant_result")
+    private Integer grantResult;
+
+    /**
+     * 异常信息
+     */
+    @TableField(value = "exception")
+    private String exception;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

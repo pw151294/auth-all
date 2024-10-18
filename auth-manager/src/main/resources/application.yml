@@ -4,8 +4,9 @@ server:
     context-path: /auth
 
 
-#数据库配置
+
 spring:
+  #数据库配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     initial-size: 5
@@ -16,6 +17,16 @@ spring:
     password: panwei960801
     url: jdbc:mysql://localhost:3306/auth_shiro?useSSL=false&serverTimezone=UTC
     username: root
+  #kafka消息队列配置
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: sys_grant_log_group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 #mybatis-plus框架相关配值
 mybatis-plus:
@@ -36,3 +47,4 @@ auth:
 task:
     queueSize: 1024
     poolSize: 10
+

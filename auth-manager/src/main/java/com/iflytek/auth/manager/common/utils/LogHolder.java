@@ -1,7 +1,7 @@
 package com.iflytek.auth.manager.common.utils;
 
 import com.alibaba.fastjson.JSON;
-import com.iflytek.auth.common.pojo.SysOpLog;
+import com.iflytek.auth.common.pojo.SysLog;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -12,14 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LogHolder {
 
-    private static final ThreadLocal<SysOpLog> logThreadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<SysLog> logThreadLocal = new ThreadLocal<>();
 
-    public static void setLog(SysOpLog sysOpLog) {
+    public static void setLog(SysLog sysOpLog) {
         logThreadLocal.set(sysOpLog);
         log.info("save log success: {}", JSON.toJSONString(sysOpLog));
     }
 
-    public static SysOpLog getLog() {
+    public static SysLog getLog() {
         return logThreadLocal.get();
     }
 

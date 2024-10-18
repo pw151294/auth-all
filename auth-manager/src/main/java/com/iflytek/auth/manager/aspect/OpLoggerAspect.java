@@ -1,7 +1,9 @@
 package com.iflytek.auth.manager.aspect;
 
 import com.alibaba.fastjson.JSON;
+import com.iflytek.auth.common.common.utils.PoCommonUtils;
 import com.iflytek.auth.common.dao.SysOpLogMapper;
+import com.iflytek.auth.common.pojo.SysLog;
 import com.iflytek.auth.common.pojo.SysOpLog;
 import com.iflytek.auth.manager.annotations.OpLogger;
 import com.iflytek.auth.manager.common.utils.LogHolder;
@@ -38,7 +40,10 @@ public class OpLoggerAspect {
         MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
         Method signatureMethod = signature.getMethod();
         OpLogger opLogger = signatureMethod.getAnnotation(OpLogger.class);
-        SysOpLog sysOpLog = LogHolder.getLog();
+        SysLog sysLog = LogHolder.getLog();
+        //创建操作日志
+        SysOpLog sysOpLog = new SysOpLog();
+        PoCommonUtils.copyLogProperties(sysLog, sysOpLog);
         sysOpLog.setInterfaceName(signatureMethod.getName());
         sysOpLog.setParam(JSON.toJSONString(proceedingJoinPoint.getArgs()));
         sysOpLog.setType(opLogger.opType());

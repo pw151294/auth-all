@@ -15,6 +15,7 @@ import com.iflytek.auth.common.dto.SysRoleUserDto;
 import com.iflytek.auth.common.pojo.*;
 import com.iflytek.auth.common.vo.SysRoleAclModuleVo;
 import com.iflytek.auth.common.vo.SysRoleAclVo;
+import com.iflytek.auth.manager.annotations.GrantLogger;
 import com.iflytek.auth.manager.task.SysTask;
 import com.iflytek.auth.manager.service.IAuditService;
 import com.iflytek.auth.manager.service.ILogService;
@@ -163,6 +164,7 @@ public class RoleServiceImpl implements IRoleService {
     }
 
     @Override
+    @GrantLogger(targetType = 5,grantType = 2)
     @Transactional(rollbackFor = Exception.class)
     public RestResponse saveOrUpdateRoleUser(SysRoleUserDto sysRoleUserDto) {
         Integer roleId = sysRoleUserDto.getRoleId();
@@ -186,6 +188,7 @@ public class RoleServiceImpl implements IRoleService {
 
 
     @Override
+    @GrantLogger(targetType = 5,grantType = 2)
     @Transactional(rollbackFor = Exception.class)
     public RestResponse saveOrUpdateRoleAcl(SysRoleAclDto sysRoleAclDto) {
         Integer roleId = sysRoleAclDto.getRoleId();

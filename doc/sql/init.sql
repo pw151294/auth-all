@@ -438,6 +438,8 @@ CREATE TABLE `sys_grant_log`
     `target_type`  int(11)     NOT NULL COMMENT '授权类型：角色',
     `grant_type`   int(11)     NOT NULL COMMENT '被授权内容类型：用户、权限',
     `grant_ids`    text COMMENT '被授权对象id列表',
+    `grant_result` int(11)     NOT NULL COMMENT '授权结果 0失败 1成功',
+    `exception`    text        COMMENT '接口抛出异常',
     `operator`     varchar(20) NOT NULL DEFAULT '' COMMENT '操作者',
     `operate_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后一次更新的时间',
     `operate_ip`   varchar(20) NOT NULL DEFAULT '' COMMENT '最后一次更新者的ip地址',

@@ -144,4 +144,10 @@ public class PoCommonUtils {
         ReflectUtil.setFieldValue(pojo, "operateIp", sysAudit.getSubmitterIp());
     }
 
+    public static void copyLogProperties(SysLog sysLog, Object log) {
+        ReflectUtil.setFieldValue(log, "operator", sysLog.getOperator());
+        ReflectUtil.setFieldValue(log, "operateTime", new Date());
+        ReflectUtil.setFieldValue(log, "operateIp", sysLog.getOperateIp());
+    }
+
 }
