@@ -426,3 +426,22 @@ CREATE TABLE `sys_op_log`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 35
   DEFAULT CHARSET = utf8mb4;
+
+-- ----------------------------
+--  Table structure for `sys_grant_log`
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_grant_log`;
+CREATE TABLE `sys_grant_log`
+(
+    `id`           int(11)     NOT NULL AUTO_INCREMENT,
+    `target_id`    int(11)     NOT NULL COMMENT '授权对象id',
+    `target_type`  int(11)     NOT NULL COMMENT '授权类型：角色',
+    `grant_type`   int(11)     NOT NULL COMMENT '被授权内容类型：用户、权限',
+    `grant_ids`    text COMMENT '被授权对象id列表',
+    `operator`     varchar(20) NOT NULL DEFAULT '' COMMENT '操作者',
+    `operate_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后一次更新的时间',
+    `operate_ip`   varchar(20) NOT NULL DEFAULT '' COMMENT '最后一次更新者的ip地址',
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 35
+  DEFAULT CHARSET = utf8mb4;
