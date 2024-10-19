@@ -1,6 +1,7 @@
 package com.iflytek.auth.manager.service;
 
 import com.iflytek.auth.common.pojo.SysGrantLog;
+import com.iflytek.auth.common.pojo.SysOpLog;
 
 /**
  * @author weipan4
@@ -9,4 +10,6 @@ import com.iflytek.auth.common.pojo.SysGrantLog;
 public interface IKafkaConsumerService {
 
     void saveLog(SysGrantLog sysGrantLog);
+
+    void saveLog(SysOpLog sysOpLog);
 }

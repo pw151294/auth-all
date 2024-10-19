@@ -14,7 +14,7 @@ public interface SysLogger {
 
     Integer getTargetType();
 
-    SysOpLog getOpLog(SysAudit sysAudit);
+    SysOpLog buildOpLog(SysAudit sysAudit);
 
-    SysGrantLog getGrantLog(SysAudit sysAudit);
+    SysGrantLog buildGrantLog(SysAudit sysAudit);
 }

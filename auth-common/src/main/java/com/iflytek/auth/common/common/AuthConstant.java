@@ -12,6 +12,9 @@ public class AuthConstant {
     public static final String grantLogTopic = "SYS_GRANT_LOG";
     public static final String grantLogGroupId = "sys_grant_log_group";
 
+    public static final String opLogTopic = "SYS_OP_LOG";
+    public static final String opLogGroupId = "sys_op_log_group";
+
     public static final String userAddMethodName = "addUser";
     public static final String userUpdateMethodName = "updateUser";
     public static final String userDeleteMethodName = "deleteUser";
@@ -31,7 +34,4 @@ public class AuthConstant {
     public static final String aclModuleAddMethodName = "addAclModule";
     public static final String aclModuleUpdateMethodName = "updateAclModule";
     public static final String aclModuleDeleteMethodName = "deleteAclModule";
-
-    public static final String opRoleUserMethodName = "saveOrUpdateRoleUser";
-    public static final String opRoleAclMethodName = "saveOrUpdateRoleAcl";
 }

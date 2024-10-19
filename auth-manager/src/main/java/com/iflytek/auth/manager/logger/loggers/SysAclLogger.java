@@ -32,7 +32,7 @@ public class SysAclLogger implements SysLogger {
     }
 
     @Override
-    public SysOpLog getOpLog(SysAudit sysAudit) {
+    public SysOpLog buildOpLog(SysAudit sysAudit) {
         SysOpLog sysOpLog = new SysOpLog();
         PoCommonUtils.copyOpLogProperties(sysAudit, sysOpLog);
         switch (sysAudit.getOperationType()) {
@@ -53,7 +53,7 @@ public class SysAclLogger implements SysLogger {
     }
 
     @Override
-    public SysGrantLog getGrantLog(SysAudit sysAudit) {
+    public SysGrantLog buildGrantLog(SysAudit sysAudit) {
         return null;
     }
 }

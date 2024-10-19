@@ -29,12 +29,12 @@ public class SysRoleUserLogger implements SysLogger {
     }
 
     @Override
-    public SysOpLog getOpLog(SysAudit sysAudit) {
+    public SysOpLog buildOpLog(SysAudit sysAudit) {
         return null;
     }
 
     @Override
-    public SysGrantLog getGrantLog(SysAudit sysAudit) {
+    public SysGrantLog buildGrantLog(SysAudit sysAudit) {
         SysGrantLog sysGrantLog = new SysGrantLog();
         sysGrantLog.setTargetType(TargetType.ROLE.getType());
         sysGrantLog.setGrantType(TargetType.USER.getType());
