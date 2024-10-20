@@ -1,6 +1,6 @@
 package com.iflytek.auth.manager.controller;
 
-import com.iflytek.auth.common.common.utils.SessionUtils;
+import com.iflytek.auth.server.SessionUtils;
 import com.iflytek.auth.common.dto.SysRoleAclDto;
 import com.iflytek.auth.common.dto.SysRoleDto;
 import com.iflytek.auth.common.dto.SysRoleUserDto;

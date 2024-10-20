@@ -27,6 +27,9 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  config:
+    location: classpath*:application.yml
+
 
 #mybatis-plus框架相关配值
 mybatis-plus:
@@ -39,7 +42,7 @@ auth:
   manager:
     filter:
       login:
-        excludeUrls: /auth/user/login,/auth/user/logout
+        excludeUrls: /login/token
     login:
       url: http://172.31.186.189/login
 
@@ -48,3 +51,11 @@ task:
     queueSize: 1024
     poolSize: 10
 
+#jwt相关配置
+jwt:
+  access-token:
+    expire-time: 600000
+    id: 72843755D44072F7E0F70A2973B95018
+  refresh-token:
+    expire-time: 86400000
+    id: 6DF8E75F5F6AFF997C75A20B61EDD76A

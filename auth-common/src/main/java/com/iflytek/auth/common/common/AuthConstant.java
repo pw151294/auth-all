@@ -7,7 +7,6 @@ package com.iflytek.auth.common.common;
 public class AuthConstant {
 
     public static final String exclusion_urls_key = "exclusionUrls";
-    public static final String loginUrl = "http://172.31.186.189/login";
 
     public static final String grantLogTopic = "SYS_GRANT_LOG";
     public static final String grantLogGroupId = "sys_grant_log_group";
@@ -34,4 +33,8 @@ public class AuthConstant {
     public static final String aclModuleAddMethodName = "addAclModule";
     public static final String aclModuleUpdateMethodName = "updateAclModule";
     public static final String aclModuleDeleteMethodName = "deleteAclModule";
+
+    public static final String tokenKey = "Authentication";
+    public static final String accessTokenKey = "accessToken";
+    public static final String refreshTokenKey = "refreshToken";
 }

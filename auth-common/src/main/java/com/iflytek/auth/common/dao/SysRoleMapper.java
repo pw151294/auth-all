@@ -18,5 +18,7 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
 
     List<SysRole> findRolesByUserId(@Param("userId") Integer userId);
 
+    List<SysRole> findRoleByUserName(@Param("username") String username);
+
     int countByName(@Param("name") String name);
 }

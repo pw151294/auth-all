@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>com.iflytek</groupId>
-            <artifactId>auth-common</artifactId>
+            <artifactId>auth-server</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 

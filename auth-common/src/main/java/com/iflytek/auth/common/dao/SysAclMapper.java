@@ -23,6 +23,8 @@ public interface SysAclMapper extends BaseMapper<SysAcl> {
 
     List<SysAcl> findAclsByUserId(@Param("userId") Integer userId);
 
+    List<SysAcl> findAclByUserName(@Param("username") String username);
+
     List<SysAclVo> pageAcls(@Param("sysAclDto") SysAclDto sysAclDto);
 
     List<SysUserVo> findUsersByAclId(@Param("aclId") Integer aclId);

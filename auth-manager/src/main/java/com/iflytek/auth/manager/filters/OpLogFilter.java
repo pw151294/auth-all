@@ -1,15 +1,22 @@
 package com.iflytek.auth.manager.filters;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Sets;
+import com.iflytek.auth.common.common.AuthConstant;
 import com.iflytek.auth.common.pojo.SysLog;
-import com.iflytek.auth.common.pojo.SysUser;
+import com.iflytek.auth.manager.common.utils.IpUtils;
 import com.iflytek.auth.manager.common.utils.LogHolder;
+import com.iflytek.auth.server.Authentication;
+import com.iflytek.auth.server.SecurityContextHolder;
+import com.iflytek.auth.server.UserDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author weipan4
@@ -20,24 +27,46 @@ import java.io.IOException;
 @Component
 public class OpLogFilter implements Filter {
 
+    private static Set<String> exclusionUrlSet = Sets.newConcurrentHashSet();
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        String exclusionUrls = filterConfig.getInitParameter(AuthConstant.exclusion_urls_key);
+        List<String> exclusionUrlList = Splitter.on(",").trimResults().omitEmptyStrings().splitToList(exclusionUrls);
+        exclusionUrlSet = Sets.newConcurrentHashSet(exclusionUrlList);
         log.info("init log filter success");
     }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        HttpSession session = request.getSession(true);
-        SysUser sysUser = (SysUser) session.getAttribute("USER");
-        SysLog sysLog = new SysLog();
-        if (sysUser != null) {
-            sysLog.setOperator(sysUser.getUsername());
-        } else {
-            sysLog.setOperator("UNKNOWN");
+        //判断是否放行
+        log.info("exclusionUrlSet:{}, url:{}", exclusionUrlSet, request.getServletPath());
+        if (exclusionUrlSet.contains(request.getServletPath())) {
+            chain.doFilter(request, servletResponse);
+            return;
         }
-        sysLog.setOperateIp(request.getRemoteAddr());
+
+        //TODO 判断具体需要实现哪两个方案
+        //从Session里获取用户认证信息
+//        HttpSession session = request.getSession(true);
+//        SysUser sysUser = (SysUser) session.getAttribute("USER");
+//        SysLog sysLog = new SysLog();
+//        if (sysUser != null) {
+//            sysLog.setOperator(sysUser.getUsername());
+//        } else {
+//            sysLog.setOperator("UNKNOWN");
+//        }
+//        sysLog.setOperateIp(request.getRemoteAddr());
+//        LogHolder.setLog(sysLog);
+//        chain.doFilter(servletRequest, servletResponse);
+        // 从SecurityContextHolder里获取认证信息
+        Authentication authentication = SecurityContextHolder.getAuthentication();
+        UserDetails userDetails = authentication.getDetails();
+        SysLog sysLog = new SysLog();
+        sysLog.setOperator(userDetails.getUsername());
+        sysLog.setOperateIp(IpUtils.getIpAddress(request));
         LogHolder.setLog(sysLog);
-        chain.doFilter(servletRequest, servletResponse);
+        chain.doFilter(request, servletResponse);
     }
 }

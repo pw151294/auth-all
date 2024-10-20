@@ -1,6 +1,6 @@
 package com.iflytek.auth.manager.aspect;
 
-import com.iflytek.auth.common.common.utils.SessionUtils;
+import com.iflytek.auth.server.SessionUtils;
 import com.iflytek.auth.common.common.utils.UrlUtils;
 import com.iflytek.auth.common.dao.SysAclMapper;
 import com.iflytek.auth.common.pojo.SysAcl;

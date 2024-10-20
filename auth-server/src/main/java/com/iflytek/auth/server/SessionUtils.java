@@ -1,5 +1,6 @@
-package com.iflytek.auth.common.common.utils;
+package com.iflytek.auth.server;
 
+import com.iflytek.auth.common.common.AuthConstant;
 import com.iflytek.auth.common.pojo.SysUser;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -46,5 +47,17 @@ public class SessionUtils {
 
     public static void removeUser() {
         session.removeAttribute("USER");
+    }
+
+    public static void setAuthentication(AuthenticationToken authenticationToken) {
+        session.setAttribute(AuthConstant.tokenKey, authenticationToken);
+    }
+
+    public static AuthenticationToken getAuthentication() {
+        return (AuthenticationToken) session.getAttribute(AuthConstant.tokenKey);
+    }
+
+    public static void removeAuthentication() {
+        session.removeAttribute(AuthConstant.tokenKey);
     }
 }

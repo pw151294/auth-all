@@ -20,6 +20,8 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 
     SysUser findByUsername(@Param("username") String username);
 
+    SysUser findByUsernameIgnoreStatus(@Param("username") String username);
+
     /**
      * 判断是否有姓名邮箱或者手机号相同的用户
      * @param sysUserDto

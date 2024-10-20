@@ -62,4 +62,9 @@
             or mail = #{sysUserDto.mail}
             or telephone = #{sysUserDto.telephone})
     </select>
+    <select id="findByUsernameIgnoreStatus" resultType="com.iflytek.auth.common.pojo.SysUser">
+        select *
+        from sys_user
+        where username = #{username}
+    </select>
 </mapper>
