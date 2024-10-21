@@ -1,10 +1,16 @@
-package com.iflytek.auth.manager.filters;
+package com.iflytek.auth.server.filters;
 
 import cn.hutool.extra.spring.SpringUtil;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 import com.iflytek.auth.common.common.AuthConstant;
-import com.iflytek.auth.server.*;
+import com.iflytek.auth.server.auth.AuthenticationToken;
+import com.iflytek.auth.server.auth.SysUserInfo;
+import com.iflytek.auth.server.auth.UserDetails;
+import com.iflytek.auth.server.service.impl.SysUserInfoService;
+import com.iflytek.auth.server.utils.JwtUtils;
+import com.iflytek.auth.server.utils.SecurityContextHolder;
+import com.iflytek.auth.server.utils.SessionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

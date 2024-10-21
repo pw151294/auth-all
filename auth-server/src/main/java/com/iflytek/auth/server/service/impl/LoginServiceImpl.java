@@ -1,8 +1,13 @@
-package com.iflytek.auth.server;
+package com.iflytek.auth.server.service.impl;
 
 import cn.hutool.crypto.digest.DigestUtil;
 import com.google.common.base.Preconditions;
 import com.iflytek.auth.common.dto.LoginDto;
+import com.iflytek.auth.server.auth.AuthenticationToken;
+import com.iflytek.auth.server.auth.UserDetails;
+import com.iflytek.auth.server.service.ILoginService;
+import com.iflytek.auth.server.utils.JwtUtils;
+import com.iflytek.auth.server.utils.SessionUtils;
 import com.iflytek.itsc.web.response.RestResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,8 @@
-package com.iflytek.auth.server;
+package com.iflytek.auth.server.utils;
 
 import com.iflytek.auth.common.common.AuthConstant;
 import com.iflytek.auth.common.pojo.SysUser;
+import com.iflytek.auth.server.auth.AuthenticationToken;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 

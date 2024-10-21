@@ -1,7 +1,9 @@
-package com.iflytek.auth.server;
+package com.iflytek.auth.server.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.iflytek.auth.common.pojo.SysAcl;
+import com.iflytek.auth.server.auth.UserDetails;
+import com.iflytek.auth.server.config.AppProperties;
 import com.iflytek.itsc.web.exception.BaseBizException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

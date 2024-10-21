@@ -6,9 +6,9 @@ import com.iflytek.auth.common.common.AuthConstant;
 import com.iflytek.auth.common.pojo.SysLog;
 import com.iflytek.auth.manager.common.utils.IpUtils;
 import com.iflytek.auth.manager.common.utils.LogHolder;
-import com.iflytek.auth.server.Authentication;
-import com.iflytek.auth.server.SecurityContextHolder;
-import com.iflytek.auth.server.UserDetails;
+import com.iflytek.auth.server.auth.Authentication;
+import com.iflytek.auth.server.utils.SecurityContextHolder;
+import com.iflytek.auth.server.auth.UserDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

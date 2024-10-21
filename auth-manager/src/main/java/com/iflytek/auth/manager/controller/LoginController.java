@@ -1,8 +1,8 @@
 package com.iflytek.auth.manager.controller;
 
 import com.iflytek.auth.common.dto.LoginDto;
-import com.iflytek.auth.server.AuthenticationToken;
-import com.iflytek.auth.server.ILoginService;
+import com.iflytek.auth.server.auth.AuthenticationToken;
+import com.iflytek.auth.server.service.ILoginService;
 import com.iflytek.itsc.web.response.RestResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

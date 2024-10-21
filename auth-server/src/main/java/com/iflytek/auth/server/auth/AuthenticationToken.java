@@ -1,4 +1,4 @@
-package com.iflytek.auth.server;
+package com.iflytek.auth.server.auth;
 
 import com.iflytek.auth.common.pojo.SysAcl;
 import lombok.Data;

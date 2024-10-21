@@ -1,10 +1,13 @@
-package com.iflytek.auth.server;
+package com.iflytek.auth.server.service.impl;
 
 import cn.hutool.extra.spring.SpringUtil;
 import com.iflytek.auth.common.dao.SysAclMapper;
 import com.iflytek.auth.common.dao.SysRoleMapper;
 import com.iflytek.auth.common.dao.SysUserMapper;
 import com.iflytek.auth.common.pojo.SysUser;
+import com.iflytek.auth.server.auth.SysUserInfo;
+import com.iflytek.auth.server.auth.UserDetails;
+import com.iflytek.auth.server.service.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 /**

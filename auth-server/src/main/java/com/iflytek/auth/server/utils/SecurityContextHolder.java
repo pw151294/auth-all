@@ -1,5 +1,6 @@
-package com.iflytek.auth.server;
+package com.iflytek.auth.server.utils;
 
+import com.iflytek.auth.server.auth.Authentication;
 import lombok.extern.slf4j.Slf4j;
 
 /**

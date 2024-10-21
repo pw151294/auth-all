@@ -1,4 +1,4 @@
-package com.iflytek.auth.server;
+package com.iflytek.auth.server.config;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
