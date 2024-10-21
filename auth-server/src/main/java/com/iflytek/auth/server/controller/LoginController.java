@@ -1,4 +1,4 @@
-package com.iflytek.auth.manager.controller;
+package com.iflytek.auth.server.controller;
 
 import com.iflytek.auth.common.dto.LoginDto;
 import com.iflytek.auth.server.auth.AuthenticationToken;

@@ -1,10 +1,10 @@
 package com.iflytek.auth.manager.aspect;
 
-import com.iflytek.auth.server.utils.SessionUtils;
 import com.iflytek.auth.common.common.utils.UrlUtils;
 import com.iflytek.auth.common.dao.SysAclMapper;
 import com.iflytek.auth.common.pojo.SysAcl;
-import com.iflytek.auth.common.pojo.SysUser;
+import com.iflytek.auth.server.auth.AuthenticationToken;
+import com.iflytek.auth.server.utils.SessionUtils;
 import com.iflytek.itsc.web.exception.BaseBizException;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -67,12 +67,13 @@ public class ValidateAclAspect {
         String requestPath = contextPath + prefix + UrlUtils.removePathVariables(value);//完整请求路径
 
         //查询当前用户所具有的权限
-        SysUser sysUser = SessionUtils.getUser();
-        List<String> urls = aclMapper.findAclsByUserId(sysUser.getId())
+        AuthenticationToken authentication = SessionUtils.getAuthentication();
+        String username = authentication.getUserDetails().getUsername();
+        List<String> urls = aclMapper.findAclByUserName(username)
                 .stream().map(SysAcl::getUrl)
                 .collect(Collectors.toList());
         if (urls.stream().noneMatch(url -> UrlUtils.hasAcl(url, requestPath))) {
-            logger.error("用户权限校验未通过，用户名:{}，权限url:{}", sysUser.getUsername(), requestPath);
+            logger.error("用户权限校验未通过，用户名:{}，权限url:{}", username, requestPath);
             throw new BaseBizException("权限校验未通过");
         }
     }

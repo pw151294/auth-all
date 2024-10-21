@@ -48,21 +48,9 @@ public class OpLogFilter implements Filter {
         }
 
         //TODO 判断具体需要实现哪两个方案
-        //从Session里获取用户认证信息
-//        HttpSession session = request.getSession(true);
-//        SysUser sysUser = (SysUser) session.getAttribute("USER");
-//        SysLog sysLog = new SysLog();
-//        if (sysUser != null) {
-//            sysLog.setOperator(sysUser.getUsername());
-//        } else {
-//            sysLog.setOperator("UNKNOWN");
-//        }
-//        sysLog.setOperateIp(request.getRemoteAddr());
-//        LogHolder.setLog(sysLog);
-//        chain.doFilter(servletRequest, servletResponse);
         // 从SecurityContextHolder里获取认证信息
         Authentication authentication = SecurityContextHolder.getAuthentication();
-        UserDetails userDetails = authentication.getDetails();
+        UserDetails userDetails = authentication.getUserDetails();
         SysLog sysLog = new SysLog();
         sysLog.setOperator(userDetails.getUsername());
         sysLog.setOperateIp(IpUtils.getIpAddress(request));

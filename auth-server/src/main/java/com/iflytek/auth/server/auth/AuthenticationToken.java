@@ -1,9 +1,11 @@
 package com.iflytek.auth.server.auth;
 
+import com.google.common.collect.Lists;
 import com.iflytek.auth.common.pojo.SysAcl;
 import lombok.Data;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * @author weipan4
@@ -27,11 +29,13 @@ public class AuthenticationToken implements Authentication {
 
     @Override
     public Collection<SysAcl> getAuthorities() {
-        return userDetails.getAuthorities();
+        return Optional.ofNullable(userDetails)
+                .map(UserDetails::getAuthorities)
+                .orElse(Lists.newArrayList());
     }
 
     @Override
-    public UserDetails getDetails() {
+    public UserDetails getUserDetails() {
         return userDetails;
     }
 

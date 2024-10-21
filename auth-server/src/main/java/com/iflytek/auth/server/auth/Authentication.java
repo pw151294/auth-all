@@ -12,7 +12,7 @@ public interface Authentication {
 
     Collection<SysAcl> getAuthorities();
 
-    UserDetails getDetails();
+    UserDetails getUserDetails();
 
     boolean isAuthenticated();
 

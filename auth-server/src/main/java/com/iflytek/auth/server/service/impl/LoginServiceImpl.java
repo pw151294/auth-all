@@ -1,17 +1,21 @@
 package com.iflytek.auth.server.service.impl;
 
 import cn.hutool.crypto.digest.DigestUtil;
-import com.google.common.base.Preconditions;
+import com.iflytek.auth.common.common.AuthConstant;
 import com.iflytek.auth.common.dto.LoginDto;
 import com.iflytek.auth.server.auth.AuthenticationToken;
 import com.iflytek.auth.server.auth.UserDetails;
 import com.iflytek.auth.server.service.ILoginService;
 import com.iflytek.auth.server.utils.JwtUtils;
-import com.iflytek.auth.server.utils.SessionUtils;
 import com.iflytek.itsc.web.response.RestResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author weipan4
@@ -46,18 +50,18 @@ public class LoginServiceImpl implements ILoginService {
 
     @Override
     public RestResponse<AuthenticationToken> refreshToken() {
-        AuthenticationToken authenticationToken = SessionUtils.getAuthentication();
-        Preconditions.checkNotNull(authenticationToken, "用户认证信息不能为空！");
-        String accessToken = authenticationToken.getAccessToken();
-        String refreshToken = authenticationToken.getRefreshToken();
-        if (!JwtUtils.validateAccessTokenIgnoreExpire(accessToken)) {
-            return RestResponse.buildError("访问令牌不合法");
-        }
+        //从请求头里获取到刷新令牌
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) requestAttributes;
+        assert servletRequestAttributes != null;
+        HttpServletRequest request = servletRequestAttributes.getRequest();
+        String refreshToken = request.getHeader(AuthConstant.refreshTokenKey);
         if (!JwtUtils.validateRefreshToken(refreshToken)) {
             return RestResponse.buildError("刷新令牌不合法或者已过期");
         }
-        authenticationToken.setAccessToken(jwtUtils.createAccessTokenByRefreshToken(refreshToken));
-
+        //根据刷新令牌生成访问令牌
+        String accessToken = jwtUtils.createAccessTokenByRefreshToken(refreshToken);
+        AuthenticationToken authenticationToken = new AuthenticationToken(accessToken, refreshToken);
         return RestResponse.buildSuccess(authenticationToken);
     }
 }
