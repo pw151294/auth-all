@@ -23,4 +23,7 @@ public class AppProperties {
 
     @Value("${jwt.refresh-token.expire-time}")
     private long refreshTokenExpireTime;
+
+    @Value("${spring.mail.username}")
+    private String mailUsername;
 }

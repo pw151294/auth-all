@@ -29,6 +29,19 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
   config:
     location: classpath*:application.yml
+  # 邮箱收发相关配置
+  mail:
+    host: mail.ustc.edu.cn
+    password: ADRfdcbMmz3zRNJQ
+    port: 465
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    username: pw151294@mail.ustc.edu.cn
+    protocol: smtps
 
 
 #mybatis-plus框架相关配值
