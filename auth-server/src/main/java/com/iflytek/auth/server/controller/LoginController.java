@@ -5,11 +5,10 @@ import com.iflytek.auth.server.auth.AuthenticationToken;
 import com.iflytek.auth.server.service.ILoginService;
 import com.iflytek.itsc.web.response.RestResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 /**
@@ -31,5 +30,15 @@ public class LoginController {
     @PostMapping("/refreshToken")
     private RestResponse<AuthenticationToken> refreshToken() {
         return loginService.refreshToken();
+    }
+
+    @PostMapping("/mfa")
+    public ResponseEntity mfa(@Valid @RequestBody LoginDto loginDto) {
+        return loginService.multiFactorAuthentication(loginDto);
+    }
+
+    @PostMapping("/verify")
+    public RestResponse<AuthenticationToken> verify(HttpServletRequest request) {
+        return loginService.verify(request.getHeader("verifyCode"));
     }
 }

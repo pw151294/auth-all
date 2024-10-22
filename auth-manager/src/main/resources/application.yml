@@ -55,7 +55,7 @@ auth:
   manager:
     filter:
       login:
-        excludeUrls: /login/token,/login/refreshToken
+        excludeUrls: /login/token,/login/refreshToken,/login/mfa,/login/verify
     login:
       url: http://172.31.186.189/login
 

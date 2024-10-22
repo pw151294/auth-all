@@ -7,6 +7,9 @@ import com.iflytek.auth.common.pojo.SysUser;
 import com.iflytek.itsc.web.exception.BaseBizException;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author weipan4
  * weipan4@iflytek.com Exp $
@@ -134,5 +137,16 @@ public class Validator {
         if (sysTenantDto.getId() == null) {
             throw new BaseBizException("租户ID不能为空");
         }
+    }
+
+    public static boolean validateUserEmail(String email) {
+        if (StringUtils.isBlank(email)) {
+            return false;
+        }
+        // 正则表达式用于匹配邮箱格式
+        String emailRegex = "^[a-zA-Z0-9_\\.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 }
