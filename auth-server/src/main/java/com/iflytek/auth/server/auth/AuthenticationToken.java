@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.iflytek.auth.common.pojo.SysAcl;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -12,7 +13,9 @@ import java.util.Optional;
  * weipan4@iflytek.com Exp $
  */
 @Data
-public class AuthenticationToken implements Authentication {
+public class AuthenticationToken implements Authentication, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String accessToken;
 

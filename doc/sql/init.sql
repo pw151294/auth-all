@@ -447,3 +447,24 @@ CREATE TABLE `sys_grant_log`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 35
   DEFAULT CHARSET = utf8mb4;
+
+-- ----------------------------
+--  Table structure for `sys_oauth_client_details`
+-- ----------------------------
+DROP TABLE IF EXISTS sys_oauth_client_details;
+CREATE TABLE sys_oauth_client_details
+(
+    client_id               VARCHAR(255),
+    client_name             VARCHAR(50),
+    resource_ids            VARCHAR(255),
+    client_secret           VARCHAR(255),
+    scope                   VARCHAR(255),
+    authorized_grant_types  VARCHAR(255),
+    web_server_redirect_uri VARCHAR(255),
+    authorities             VARCHAR(255),
+    access_token_validity   INTEGER,
+    refresh_token_validity  INTEGER,
+    additional_information  VARCHAR(4096),
+    autoapprove             VARCHAR(255)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;

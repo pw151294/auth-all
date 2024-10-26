@@ -20,4 +20,5 @@ public class LoginDto {
     @NotBlank
     private String rawPassword;
 
+    private String state;
 }

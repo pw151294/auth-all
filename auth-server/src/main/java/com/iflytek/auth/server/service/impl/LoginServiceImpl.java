@@ -5,13 +5,19 @@ import com.iflytek.auth.common.common.AuthConstant;
 import com.iflytek.auth.common.common.Validator;
 import com.iflytek.auth.common.dao.SysUserMapper;
 import com.iflytek.auth.common.dto.LoginDto;
+import com.iflytek.auth.common.dto.OAuth2LoginResultDto;
 import com.iflytek.auth.common.pojo.SysUser;
+import com.iflytek.auth.server.auth.Authentication;
 import com.iflytek.auth.server.auth.AuthenticationToken;
 import com.iflytek.auth.server.auth.UserDetails;
+import com.iflytek.auth.server.oauth2.SysCookieGenerator;
+import com.iflytek.auth.server.oauth2.SysTicketGrantingTicket;
+import com.iflytek.auth.server.oauth2.SysTicketIdGenerator;
 import com.iflytek.auth.server.service.EmailService;
 import com.iflytek.auth.server.service.ILoginService;
 import com.iflytek.auth.server.utils.JwtUtils;
 import com.iflytek.auth.server.utils.TotpUtils;
+import com.iflytek.itsc.web.exception.BaseBizException;
 import com.iflytek.itsc.web.response.RestResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,15 +27,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +70,11 @@ public class LoginServiceImpl implements ILoginService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private SysCookieGenerator cookieGenerator;
+    @Autowired
+    private SysCookieGenerator sysCookieGenerator;
 
     @Override
     public RestResponse<AuthenticationToken> createToken(LoginDto loginDto) {
@@ -149,5 +165,57 @@ public class LoginServiceImpl implements ILoginService {
         authenticationToken.setAuthenticated(false);
 
         return RestResponse.buildSuccess(authenticationToken);
+    }
+
+    @Override
+    public RestResponse<OAuth2LoginResultDto> oAuth2Login(@Valid @RequestBody LoginDto loginDto, HttpServletResponse response) {
+        //验证用户信息
+        UserDetails userDetails = Optional.ofNullable(userInfoService.loadUserByUsername(loginDto.getUsername()))
+                .orElseThrow(() -> new BaseBizException(String.format("用户%s不存在！", loginDto.getUsername())));
+        if (!StringUtils.equals(userDetails.getUsername(), loginDto.getUsername())
+                || !StringUtils.equals(userDetails.getPassword(), DigestUtil.md5Hex(loginDto.getRawPassword()))) {
+            return RestResponse.buildError("用户名或者密码错误！");
+        }
+        //生成TGT对象
+        String accessToken = jwtUtils.createAccessToken(userDetails);
+        String refreshToken = jwtUtils.createRefreshToken(userDetails);
+        AuthenticationToken authenticationToken = new AuthenticationToken(accessToken, refreshToken);
+        authenticationToken.setUserDetails(userDetails);
+        authenticationToken.setAuthenticated(false);
+        SysTicketGrantingTicket tgt = new SysTicketGrantingTicket(authenticationToken, 10 * 60 * 1000L,
+                SysTicketIdGenerator.getNewTicketId("TGT"));
+        //将TGT对象设置到缓存里
+        RMapCache rMapCache = redissonClient.getMapCache("TGT");
+        rMapCache.put(tgt.getId(), tgt, 60 * 60 * 1000L, TimeUnit.MILLISECONDS);
+        //创建TGC
+        cookieGenerator.setCookieName("TGC");
+        cookieGenerator.addCookie(response, tgt.getId());
+        //创建响应对象
+        OAuth2LoginResultDto resultDto = new OAuth2LoginResultDto();
+        resultDto.setTicket(tgt.getId());
+        resultDto.setState(loginDto.getState());
+        return RestResponse.buildSuccess(resultDto);
+    }
+
+    @Override
+    public RestResponse<Authentication> oAuth2Token(HttpServletRequest request) {
+        //判断是否有TGC
+        String ticket = Arrays.stream(request.getCookies())
+                .filter(cookie -> StringUtils.equals(cookie.getName(), "TGC"))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElseThrow(() -> new BaseBizException("TGC不存在！"));
+        RMapCache<Object, Object> rMapCache = redissonClient.getMapCache("TGT");
+        if (rMapCache == null) {
+            throw new BaseBizException("TGT不存在！");
+        }
+        SysTicketGrantingTicket tgt = Optional.of(rMapCache.get(ticket))
+                .map(SysTicketGrantingTicket.class::cast)
+                .orElseThrow(() -> new BaseBizException("票据不存在！"));
+        //判断票据是否超时
+        if (tgt.isExpired()) {
+            throw new BaseBizException("票据已超时！");
+        }
+        return RestResponse.buildSuccess(tgt.getAuthentication());
     }
 }
